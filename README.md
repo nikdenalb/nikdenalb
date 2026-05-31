@@ -1,8 +1,8 @@
-### My current public workflow
+### A small part of my routine I'd like to share
 
 1. **SQL Academy** — at least 1 task per day.  
    **Goal:** finish all courses on the platform.  
-   **ETA:** ~6 months.
+   **ETA:** **2026-11-15** (**24** weeks).
 
 [![SQL Academy](https://img.shields.io/badge/SQL_Academy-profile-336791?style=flat&logo=postgresql&logoColor=white)](https://sql-academy.org/en/profile/6708883de6aba60029502cc2)
 
@@ -12,8 +12,8 @@
 
 [![LeetCode streak](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Falfa-leetcode-api.onrender.com%2Fnikdenalb%2Fcalendar&query=%24.streak&logo=leetcode&label=streak&color=FFA116)](https://leetcode.com/u/nikdenalb/)
 
-3. **[objectionary/eo](https://github.com/objectionary/eo)** — **≥16 h/week** through **2026-05-31**.  
-   Open source — [open worklog](EO_WORKLOG.md).
+3. **[objectionary/eo](https://github.com/objectionary/eo)** — **≥2 h/week**.  
+   **ETA:** current week; renewed weekly.
 
 <br>
 

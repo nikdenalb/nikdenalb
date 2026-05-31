@@ -1,6 +1,5 @@
 | Day | Date       | Branch / issue | Tokens | Description |
 |-----|------------|----------------|--------|-------------|
-| Sun |            |                |        |             |
 | Mon | 2026-05-18 | master         | 1      | reading project contributing rules (CONTRIBUTING-HUMAN, eo-contributing) |
 |     |            | master         | 1      | worklog established; manual log + agent rules |
 | Tue | 2026-05-19 | #4236          | 6      | PDD theory ([Puzzle Driven Development](https://www.yegor256.com/2010/03/04/pdd.html); [PDD in Action](https://www.yegor256.com/2017/04/05/pdd-in-action.html); [How to cut corners](https://www.yegor256.com/2015/01/15/how-to-cut-corners.html) ([Cut Corners webinar](https://www.youtube.com/watch?v=YBQoTZ-1X-o); [Meetings Are a Scam](https://www.youtube.com/watch?v=b6r2W3P9vgY)); [GitHub Guidelines](https://www.yegor256.com/2014/04/15/github-guidelines.html) ([Bugs Are Welcome](https://www.yegor256.com/2014/04/13/bugs-are-welcome.html); [Philosophy of Bugs webinar](https://www.youtube.com/watch?v=7DYr8GYzJ6Q); [XDSD without meetings](https://www.youtube.com/watch?v=qRZYJGYdrwk) — **continuation**)) |
@@ -14,4 +13,12 @@
 |     |            | #4236          | 1      | deep analysis of `tests-resolves-and-touches` fix; line order correction in `file.eo` |
 |     |            | #4236          | 1      | master branch updated (fork/upstream sync); local test run issues (`mvn clean install -PskipITs` timeouts/failures: `StrictXmirTest`, `OyRemoteTest`, `EoSyntaxTest` Ant `blns.txt` download `SocketException`; target test `EOfileTest#tests_resolves_and_touches` — success |
 |     |            | #4236          | 2      | pre-PR verification: `mvn clean install -PskipITs` — success; `@todo #4096` removed from `file.eo`; local `mvn clean install -Pqulice` — failure (`eo-runtime` `check-all-java-classes-compiled`, missing `EO*φ.class` on Windows); JDK setup for qulice (Java 21 for Qulice plugin) |
-| Sat |            |                |        |             |
+| Mon | 2026-05-25 | #4236          | 2      | WSL setup attempt for local Linux `qulice` verification; Windows enabled WSL/Virtual Machine Platform, reboot got stuck in endless loading, recovery mode restored access; WSL path paused as too risky for this machine; tried to fix Google Chrome after Windows recovery; Chrome reinstall |
+|     |            | #4236          | 10     | Ubuntu laptop dev setup: `eo` project clone; JDK download/install; build/run attempts; Cursor download; profiles and related apps setup; stopped at ensuring GitHub access |
+| Tue | 2026-05-26 | #4236          | 1      | GitHub access setup; `mvn clean install` — exits ~5 min after start |
+|     |            | #4236          | 1      | `mvn clean install` — success; `mvn clean install -Pqulice` — failure |
+|     |            | #4236          | 1      | Ubuntu laptop `-Pqulice` failure analysis (missing `/usr/lib/jvm/java-21-openjdk-amd64/bin/javac`); diagnostics — JRE only, `JAVA_HOME` unset; `apt install openjdk-21-jdk-headless` — `javac 21.0.10`; `mvn clean verify -pl eo-parser -am -PskipTests -Pqulice` — success |
+|     |            | #4236          | 2      | `TESTS-RUNBOOK.md` updated with project-standard test commands (`mvn clean install -PskipITs`, `-Pqulice`, module/targeted runs); pre-PR tests run per project gates; PR opened for `#4236` (`tests-resolves-and-touches` in `file.eo`, `@todo #4096` removed) |
+| Wed | 2026-05-27 |                |        | PC technical issues; diagnostics — cooling failure; repair in progress — **continuation** |
+| Fri | 2026-05-29 |                |        | PC repair finished |
+| Sun | 2026-05-31 |                |        | My PR is still not processed and I did not want to work on eo off my main PC. Radically cutting the weekly plan to **4 tokens** — enough for **1 new PR per week**. |

@@ -1,3 +1,8 @@
+### [0.0.2] - <small>2026-05-31</small>
+
+- Updated `README.md`: heading; SQL **ETA** **2026-11-15** (**24** weeks); eo **≥2 h/week** with weekly **ETA**; removed open worklog link
+- Updated `EO_WORKLOG.md`: skip empty days (no placeholder rows)
+
 ### [0.0.1] - <small>2026-05-24</small>
 
 - Added `CHANGELOG.md` and `VERSION`
