@@ -22,3 +22,4 @@
 | Wed | 2026-05-27 |                |        | PC technical issues; diagnostics — cooling failure; repair in progress — **continuation** |
 | Fri | 2026-05-29 |                |        | PC repair finished |
 | Sun | 2026-05-31 |                |        | My PR is still not processed and I did not want to work on eo off my main PC. Radically cutting the weekly plan to **4 tokens** — enough for **1 new PR per week**. |
+| Sun | 2026-06-07 | master         | 1      | agent task-pick setup: `eo-pdd-task-picking.mdc`, `pdd-task-bank.yaml`; open PDD scan (GitHub API, `@todo` grep); ranked tasks excl. good first issue — **0 ready** tasks (#5186 blocked lints#927; #5153/#5154 have open PRs) |

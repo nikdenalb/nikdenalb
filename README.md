@@ -11,11 +11,3 @@
    **ETA:** ~1-3 years.
 
 [![LeetCode streak](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Falfa-leetcode-api.onrender.com%2Fnikdenalb%2Fcalendar&query=%24.streak&logo=leetcode&label=streak&color=FFA116)](https://leetcode.com/u/nikdenalb/)
-
-3. **[objectionary/eo](https://github.com/objectionary/eo)** — **≥2 h/week**.  
-   **ETA:** current week; renewed weekly.
-
-<br>
-
-4. **Profile and legacy repos** — **≥1 h/week** polishing this page and older repositories.  
-   **Goal:** remove everything unnecessary; reduce this to **30 min/week**.

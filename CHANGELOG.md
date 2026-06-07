@@ -1,3 +1,8 @@
+### [0.0.3] - <small>2026-06-07</small>
+
+- Updated `README.md`: removed point 3 (`objectionary/eo`); plan stays **4 tokens/week**, but open-task instability makes it irrelevant to show on the main page
+- Updated `README.md`: removed point 4 (`Profile and legacy repos`); keeping this item non-public seemed more appropriate
+
 ### [0.0.2] - <small>2026-05-31</small>
 
 - Updated `README.md`: heading; SQL **ETA** **2026-11-15** (**24** weeks); eo **≥2 h/week** with weekly **ETA**; removed open worklog link
