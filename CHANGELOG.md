@@ -1,3 +1,8 @@
+### [0.0.4] - <small>2026-06-08</small>
+
+- Renamed `EO_WORKLOG.md` → `eo-worklog.md` (kebab-case for custom logs; uppercase reserved for ecosystem files)
+- Added `leetcode-100-diary.md` (LeetCode 100 streak diary; experiment; not linked from main page)
+
 ### [0.0.3] - <small>2026-06-07</small>
 
 - Updated `README.md`: removed point 3 (`objectionary/eo`); plan stays **4 tokens/week**, but open-task instability makes it irrelevant to show on the main page
