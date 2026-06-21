@@ -1,3 +1,9 @@
+### [0.0.5] - <small>2026-06-21</small>
+
+- Updated `README.md`: link to `leetcode-100-diary.md` under LeetCode
+- Updated `leetcode-100-diary.md`: subjective difficulty (`1`–`9` scale in intro; per-entry line next to LeetCode difficulty)
+- Updated `leetcode-100-diary.md`: intro (experiment; may stop at any time)
+
 ### [0.0.4] - <small>2026-06-08</small>
 
 - Renamed `EO_WORKLOG.md` → `eo-worklog.md` (kebab-case for custom logs; uppercase reserved for ecosystem files)
