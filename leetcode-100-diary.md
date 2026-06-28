@@ -8,6 +8,332 @@ Progress rule: solved problems increase the counter by 1; an unsolved task reset
 
 Record streak: **4**
 
+## 2026-06-28 · [Maximum Element After Decreasing and Rearranging](https://leetcode.com/problems/maximum-element-after-decreasing-and-rearranging/?envType=daily-question&envId=2026-06-28) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+An easy task for me. The hard part was hitting submit, because a solution this simple cannot be right for a medium problem, so I must have misunderstood something, but I do not see what.
+
+```java
+class Solution {
+    int maximumElementAfterDecrementingAndRearranging(int[] arr) {
+        int n = arr.length;
+        Arrays.sort(arr);
+        arr[0] = 1;
+        for (int i = 1; i < n; i++) {
+            if (arr[i] > arr[i - 1] + 1) arr[i] = arr[i - 1] + 1;
+        }
+        return arr[n - 1];
+    }
+}
+```
+
+Runtime **9 ms** (beats 67.50%) · Memory **77.32 MB** (beats 78.75%) · Time taken **6m 5s**
+
+## 2026-06-27 · [Find the Maximum Number of Elements in Subset](https://leetcode.com/problems/find-the-maximum-number-of-elements-in-subset/?envType=daily-question&envId=2026-06-27) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **7/9**
+
+Brute force was not an obvious approach. I was afraid I would not solve it at all, which I would rather avoid on medium problems.
+
+```java
+class Solution {
+    int maximumLength(int[] nums) {
+        int max = 46340;
+        int n = nums.length;
+        Arrays.sort(nums);
+        HashSet<Integer> even = new HashSet<>();
+        HashSet<Integer> odd = new HashSet<>();
+        int cnt = 0;
+        for (int m : nums) {
+            if (m == 1) cnt++;
+            else {
+                if (odd.contains(m)) even.add(m);
+                else odd.add(m);
+            }        
+        }
+        if (cnt % 2 == 0) cnt--;
+        int out = Math.max(1, cnt);
+        int j = 0;
+        if (nums[0] == 1) {
+            while (nums[j] == 0) j++;
+        }
+        int curr = nums[j];
+        for (int i = j + 1; i < n; i++) {
+            if (curr != nums[i]) {
+                cnt = 1;
+                while (curr <= max && even.contains(curr) && odd.contains(curr * curr)) {
+                    cnt += 2;
+                    curr = curr * curr;
+                }
+                out = Math.max(out, cnt);
+                curr = nums[i];
+            }
+        }
+        return out;
+    }
+}
+```
+
+Runtime **72 ms** (beats 48.84%) · Memory **67.50 MB** (beats 56.98%) · Time taken **48m 33s**
+
+## 2026-06-26 · [Count Subarrays with Majority Element II](https://leetcode.com/problems/count-subarrays-with-majority-element-ii/?envType=daily-question&envId=2026-06-26) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **5/9**
+
+Did not solve it alone. The prefix-sum reduction was clear, but a Fenwick tree from memory was not. **5/9** sits in the medium band — with those techniques drilled the task is straightforward rather than hard. Segment trees are going on the practice plan.
+
+```java
+class Solution {
+    long countMajoritySubarrays(int[] nums, int target) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) nums[i] = nums[i] == target ? 1 : -1;
+        for (int i = 1; i < n; i++) nums[i] = nums[i] + nums[i - 1];
+        long out = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = -1; j < i; j++) {
+                int jval = j == -1 ? 0 : nums[j];
+                if (nums[i] - jval > 0) out++;
+            }
+        }
+        return out;
+    }
+}
+```
+
+After a little help from a free LLM:
+
+```java
+class Solution {
+    long countMajoritySubarrays(int[] nums, int target) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) nums[i] = nums[i] == target ? 1 : -1;
+        for (int i = 1; i < n; i++) nums[i] += nums[i - 1];
+
+        Fenwick fenwick = new Fenwick(2 * n + 2);
+        fenwick.add(n + 1, 1);
+
+        long out = 0;
+        for (int i = 0; i < n; i++) {
+            int index = nums[i] + n + 1;
+            out += fenwick.sum(index - 1);
+            fenwick.add(index, 1);
+        }
+        return out;
+    }
+
+    class Fenwick {
+        int size;
+        long[] tree;
+
+        Fenwick(int size) {
+            this.size = size;
+            tree = new long[size + 1];
+        }
+
+        void add(int index, long delta) {
+            for (int i = index; i <= size; i += i & -i) tree[i] += delta;
+        }
+
+        long sum(int index) {
+            if (index <= 0) return 0;
+            long out = 0;
+            for (int i = index; i > 0; i -= i & -i) out += tree[i];
+            return out;
+        }
+    }
+}
+```
+
+## 2026-06-25 · [Count Subarrays with Majority Element I](https://leetcode.com/problems/count-subarrays-with-majority-element-i/) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+I got distracted, so the time is a bit inflated.
+
+```java
+class Solution {
+    int countMajoritySubarrays(int[] nums, int target) {
+        int cnt = 0, out = 0;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == target) {
+                cnt = 1;
+                out++;
+            } else cnt = 0;        
+            for (int j = i + 1; j < n; j++) {
+                if (nums[j] == target) cnt++;
+                if (cnt * 2 > j - i + 1) out++;
+            }
+        }
+        return out;
+    }
+}
+```
+
+Runtime **36 ms** (beats 59.52%) · Memory **46.98 MB** (beats 61.93%) · Time taken **11m 8s**
+
+## 2026-06-24 · [Number of Zigzag Arrays II](https://leetcode.com/problems/number-of-zigzag-arrays-ii/description/?envType=daily-question&envId=2026-06-24) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+I did not solve it. I sat for about 10 minutes and quit. This is a matrix exponentiation problem and I have not met that technique yet. I will practice it.
+
+After reading the [editorial](https://leetcode.com/problems/number-of-zigzag-arrays-ii/editorial/?envType=daily-question&envId=2026-06-24):
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+    int zigZagArrays(int n, int l, int r) {
+        int m = r - l + 1;
+
+        long[][] matrix = new long[m][m];
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < m && i + j < m - 1; j++)
+                matrix[i][j] = 1;
+
+        long[][] result = new long[m][m];
+        for (int i = 0; i < m; i++) result[i][i] = 1;
+
+        long[][] base = matrix;
+        int exp = n - 1;
+        while (exp > 0) {
+            if ((exp & 1) == 1) result = multiply(result, base);
+            base = multiply(base, base);
+            exp >>= 1;
+        }
+
+        long sum = 0;
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < m; j++)
+                sum += result[i][j];
+
+        return (int) (sum * 2 % mod);
+    }
+
+    long[][] multiply(long[][] left, long[][] right) {
+        int m = left.length;
+        long[][] out = new long[m][m];
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < m; j++) {
+                long cell = 0;
+                for (int k = 0; k < m; k++) cell = (cell + left[i][k] * right[k][j]) % mod;
+                out[i][j] = cell;
+            }
+        return out;
+    }
+}
+```
+
+## 2026-06-23 · [Number of Zigzag Arrays I](https://leetcode.com/problems/number-of-zigzag-arrays-i/description/?envType=daily-question&envId=2026-06-23&roomId=nAywuq) · (3 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+My speed suffers from lack of exposure. It took me a long time to realize I needed to count variants with a specific ending number. I also need to drill modulo and type casting — I add too many extra parentheses just to be sure both work correctly.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+    int zigZagArrays(int n, int l, int r) {
+        int m = r - l + 1;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+        for (int j = 1; j < n; j++) {
+            for (int i = 1; i < m; i++) dp[i][j] = (int) (((long) dp[i - 1][j] + dp[i - 1][j - 1]) % mod);
+            if (++j == n) break;
+            for (int i = m - 2; i >= 0; i--) dp[i][j] = (int) (((long) dp[i + 1][j] + dp[i + 1][j - 1]) % mod);
+        }
+        long sum = 0;
+        for (int i = 0; i < m; i++) sum += dp[i][n - 1];
+        sum *= 2;
+        return (int) (sum % mod);
+    }
+}
+/*   n=5, m=6
+[0][ ][ ][ ][ ]
+[1][ ][ ][ ][ ]
+[2][ ][ ][ ][ ]
+[3][ ][ ][ ][ ]
+[4][ ][ ][ ][ ]
+[5][ ][ ][ ][ ]
+
+[1]  [0] [16] [ ][ ]
+[1]  [1] [14] [ ][ ]
+[1]  [2] [12] [ ][ ]
+[1]  [3] [9 ] [ ][ ]
+[1]  [4] [5 ] [ ][ ]
+[1]  [5] [0 ] [ ][ ]
+*/
+```
+
+Runtime **262 ms** (beats 92.50%) · Memory **111.45 MB** (beats 12.50%) · Time taken **55m 29s**
+
+Beautification:
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+    int zigZagArrays(int n, int l, int r) {
+        int m = r - l + 1;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+        for (int j = 1; j < n; j++) {
+            for (int i = 1; i < m; i++) dp[i][j] = (dp[i - 1][j] + dp[i - 1][j - 1]) % mod;
+            if (++j == n) break;
+            for (int i = m - 2; i >= 0; i--) dp[i][j] = (dp[i + 1][j] + dp[i + 1][j - 1]) % mod;
+        }
+        long sum = 0;
+        for (int i = 0; i < m; i++) sum += dp[i][n - 1];
+        return (int) (sum * 2 % mod);
+    }
+}
+```
+
+## 2026-06-22 · [Maximum Number of Balloons](https://leetcode.com/problems/maximum-number-of-balloons/description/?envType=daily-question&envId=2026-06-22) · (2 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+I did not get to a clean solution right away. I should be less hesitant to write contest-style code first. I cleaned it up afterward.
+
+```java
+class Solution {
+    int maxNumberOfBalloons(String text) {
+        int[] cs = new int[26];
+        for (char c : text.toCharArray()) {
+            if (c == 'b' || c == 'a' || c == 'l' || c == 'o' || c == 'n') cs[c - 'a']++;
+        }
+        int out = Integer.MAX_VALUE;
+        out = Math.min(out, cs['b' - 'a']);
+        out = Math.min(out, cs[0]);
+        out = Math.min(out, cs['l' - 'a'] / 2);
+        out = Math.min(out, cs['o' - 'a'] / 2);
+        out = Math.min(out, cs['n' - 'a']);
+        return out;
+    }
+}
+```
+
+Runtime **2 ms** (beats 96.67%) · Memory **43.22 MB** (beats 79.23%) · Time taken **7m 49s**
+
+Beautification:
+
+```java
+class Solution {
+    int maxNumberOfBalloons(String text) {
+        int[] cs = new int[26];
+        for (char c : text.toCharArray()) cs[c - 'a']++;
+
+        int[] tgt = new int[26];
+        for (char c : "balloon".toCharArray()) tgt[c - 'a']++;
+
+        int out = Integer.MAX_VALUE;
+        for (int i = 0; i < 26; i++) if (tgt[i] > 0) out = Math.min(out, cs[i] / tgt[i]);
+
+        return out;
+    }
+}
+```
+
 ## 2026-06-21 · [Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/?envType=daily-question&envId=2026-06-21) · (1 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **2/9**

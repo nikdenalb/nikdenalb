@@ -2,7 +2,7 @@
 
 1. **SQL Academy** — at least 1 task per day.  
    **Goal:** finish all courses on the platform.  
-   **ETA:** **2026-11-15** (**21** weeks).
+   **ETA:** **2026-11-15** (**20** weeks).
 
 [![SQL Academy](https://img.shields.io/badge/SQL_Academy-profile-336791?style=flat&logo=postgresql&logoColor=white)](https://sql-academy.org/en/profile/6708883de6aba60029502cc2)
 

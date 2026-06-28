@@ -1,3 +1,7 @@
+### [0.0.6] - <small>2026-06-28</small>
+
+- Planned updates only
+
 ### [0.0.5] - <small>2026-06-21</small>
 
 - Updated `README.md`: link to `leetcode-100-diary.md` under LeetCode
