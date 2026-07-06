@@ -8,6 +8,482 @@ Progress rule: solved problems increase the counter by 1; an unsolved task reset
 
 Record streak: **4**
 
+## 2026-07-06 · [Remove Covered Intervals](https://leetcode.com/problems/remove-covered-intervals/?envType=daily-question&envId=2026-07-06) · (3 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+I broke my head uselessly over a more optimized solution. Judging by the timer, my brute force is the ideal option at these constraints.
+
+```java
+class Solution {
+    int removeCoveredIntervals(int[][] intervals) {
+        int n = intervals.length;
+        int cnt = n;
+        boolean[] rvd = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int a = intervals[i][0], b = intervals[i][1];                
+            for (int j = 0; j < i; j++) {
+                if (rvd[j]) continue;
+                int c = intervals[j][0], d = intervals[j][1];        
+                if (c <= a && b <= d) {
+                    rvd[i] = true;
+                    cnt--;
+                    break;
+                } else if (c >= a && b >= d)  {
+                    rvd[j] = true;
+                    cnt--;
+                }
+            }
+        }
+        return cnt;
+    }
+}
+```
+
+Runtime **3 ms** (beats 100.00%) · Memory **46.46 MB** (beats 62.65%) · Time taken **15m 1s**
+
+PS [eunice](https://leetcode.com/problems/remove-covered-intervals/solutions/8378466/solution-by-la_castille-0b55) illustrated and implemented my vague thoughts.
+
+## 2026-07-05 · [Number of Paths with Max Score](https://leetcode.com/problems/number-of-paths-with-max-score/?envType=daily-question&envId=2026-07-05) · (2 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **3/9**
+
+The problem is easy to understand and medium to implement. I was not in the mood, and that showed on the timer too.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+
+    int[] pathsWithMaxScore(List<String> board) {
+        int n = board.size();
+        int[][][] dp = new int[n][n][2];
+
+        dp[n - 1][n - 1][0] = 0;
+        dp[n - 1][n - 1][1] = 1;
+
+        for (int j = n - 2; j >= 0; j--) {
+            char c = board.get(n - 1).charAt(j);
+            if (c == 'X') break;
+            dp[n - 1][j][0] = dp[n - 1][j + 1][0] + Integer.parseInt(String.valueOf(c));
+            dp[n - 1][j][1] = 1;
+        }
+
+        for (int i = n - 2; i >= 0; i--) {
+            char c = board.get(i).charAt(n - 1);
+            if (c == 'X') break;
+            dp[i][n - 1][0] = dp[i + 1][n - 1][0] + Integer.parseInt(String.valueOf(c));
+            dp[i][n - 1][1] = 1;
+        }
+
+        int[][] dirs = {{1, 0}, {0, 1}, {1, 1}};
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = n - 2; j >= 0; j--) {
+                char c = board.get(i).charAt(j);
+                if (c == 'X') continue;
+                int v = c == 'E' ? 0 : Integer.parseInt(String.valueOf(c));
+                int max = -1, cnt = 0;
+
+                for (int[] d : dirs) {
+                    int x = i + d[0], y = j + d[1];
+                    if (dp[x][y][1] == 0) continue;
+                    if (dp[x][y][0] + v > max) {
+                        max = dp[x][y][0] + v;
+                        cnt = dp[x][y][1];
+                    } else if (dp[x][y][0] + v == max) {
+                        cnt = (cnt + dp[x][y][1]) % mod;
+                    }
+                }
+                if (max >= 0) {
+                    dp[i][j][0] = max;
+                    dp[i][j][1] = cnt;
+                }
+            }
+        }
+        return dp[0][0];
+    }
+}
+```
+
+Runtime **15 ms** (beats 47.13%) · Memory **47.27 MB** (beats 19.54%) · Time taken **42m 19s**
+
+## 2026-07-04 · [Minimum Score of a Path Between Two Cities](https://leetcode.com/problems/minimum-score-of-a-path-between-two-cities/?envType=daily-question&envId=2026-07-04) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+Union-Find was on this year's Yandex summer school contest. I was very afraid I would not remember even a weak solution. Emotions without exam nerves only slow me down. I will add the algorithm for practice in two months.
+
+```java
+class Solution {
+    int[] p;
+    int minScore(int n, int[][] roads) {
+        p = new int[n + 1];
+        for (int i = 1; i <= n; i++) p[i] = i;
+        
+        for (int[] r : roads) setParent(r[0], r[1]);
+               
+        int out = Integer.MAX_VALUE;
+        for (int[] r : roads) {
+            int a = r[0];
+            while (p[a] != a) a = p[a];
+            if (a == 1) out = Math.min(out, r[2]);
+        }        
+        return out;
+    }
+    
+    void setParent(int a, int b) {
+        while (p[a] != a) a = p[a];
+        while (p[b] != b) b = p[b];
+        p[Math.max(a, b)] = Math.min(a, b);
+    }
+}
+```
+
+Runtime **100 ms** (beats 6.53%) · Memory **127.86 MB** (beats 90.27%) · Time taken **51m 21s**
+
+## 2026-07-03 · [Network Recovery Pathways](https://leetcode.com/problems/network-recovery-pathways/?envType=daily-question&envId=2026-07-03) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+I am somewhat overloaded right now, so drilling this problem is pushed back two months. I hope there will not be more like it in that window.
+
+TL solution:
+
+```java
+class Solution {
+    int findMaxPathScore(int[][] edges, boolean[] online, long k) {
+        n = online.length;
+        this.k = k;
+        list = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) list.add(new ArrayList<>());
+
+        for (int[] edg : edges) {
+            int u = edg[0], v = edg[1], cost = edg[2];
+            if (!online[u] || !online[v]) continue;
+            list.get(u).add(new Pair(v, cost));
+        }
+
+        dfs(0, 0, Integer.MAX_VALUE, 0);
+
+        return out;
+    }
+
+    List<List<Pair>> list;
+    int n = 0;
+    int out = -1;
+    long k = 0;
+
+    void dfs(int v, int cost, int min, long total) {  
+        if (total + cost > k) return;
+        if (v != 0) min = Math.min(min, cost);    
+        
+        if (v == n - 1) {
+            out = Math.max(out, min);
+            return;
+        }
+
+        total = total + cost;
+        for (Pair p : list.get(v)) dfs(p.v(), p.cost(), min, total);
+    }
+
+    record Pair(int v, int cost){}
+}
+```
+
+LeetCode AI verdict (I wanted to buy premium after this try, maybe with bonus points I will):
+
+**Approach**
+
+Current: Depth-First Search / Recursion  
+Suggested: Binary Search / Dijkstra's Algorithm / Shortest Path  
+Key Idea: Maximize the minimum edge weight in a path subject to a total cost constraint.
+
+**Efficiency**
+
+Time Complexity
+
+Current complexity: `O(m × 2^n)`  
+Suggested complexity: `O((n + m) log m)`  
+Suggestions: Replace DFS with binary search on the answer combined with a shortest path check.
+
+Space Complexity
+
+Current complexity: `O(N + M)`  
+Suggested complexity: `O(N + M)`  
+Suggestions: Replace DFS with binary search on the answer combined with a shortest path check.
+
+Final solution:
+
+```java
+class Solution {
+    record Edge(int to, int cost) {}
+
+    List<List<Edge>> graph;
+    List<Integer> topologicalOrder;
+    int nodeCount;
+    long costLimit;
+
+    int findMaxPathScore(int[][] edges, boolean[] online, long k) {
+        nodeCount = online.length;
+        costLimit = k;
+        graph = new ArrayList<>(nodeCount);
+        for (int i = 0; i < nodeCount; i++)
+            graph.add(new ArrayList<>());
+
+        int minCost = Integer.MAX_VALUE, maxCost = 0;
+        for (int[] edge : edges) {
+            int from = edge[0], to = edge[1], weight = edge[2];
+            if (!online[from] || !online[to]) continue;
+            graph.get(from).add(new Edge(to, weight));
+            minCost = Math.min(minCost, weight);
+            maxCost = Math.max(maxCost, weight);
+        }
+
+        topologicalOrder = buildTopologicalOrder();
+
+        while (minCost < maxCost) {
+            int mid = (minCost + maxCost + 1) >>> 1;
+            if (canReachWithMinEdge(mid)) minCost = mid;
+            else maxCost = mid - 1;
+        }
+        return canReachWithMinEdge(minCost) ? minCost : -1;
+    }
+
+    List<Integer> buildTopologicalOrder() {
+        int[] inDegree = new int[nodeCount];
+        for (int from = 0; from < nodeCount; from++)
+            for (Edge edge : graph.get(from))
+                inDegree[edge.to()]++;
+
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < nodeCount; i++)
+            if (inDegree[i] == 0) queue.offer(i);
+
+        List<Integer> order = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int from = queue.poll();
+            order.add(from);
+            for (Edge edge : graph.get(from))
+                if (--inDegree[edge.to()] == 0) queue.offer(edge.to());
+        }
+        return order;
+    }
+
+    boolean canReachWithMinEdge(int minEdgeCost) {
+        long unreachable = Long.MAX_VALUE / 4;
+        long[] distance = new long[nodeCount];
+        for (int i = 1; i < nodeCount; i++)
+            distance[i] = unreachable;
+
+        for (int from : topologicalOrder) {
+            if (distance[from] == unreachable) continue;
+            for (Edge edge : graph.get(from)) {
+                if (edge.cost() < minEdgeCost) continue;
+                int to = edge.to();
+                distance[to] = Math.min(distance[to], distance[from] + edge.cost());
+            }
+        }
+        return distance[nodeCount - 1] <= costLimit;
+    }
+}
+```
+
+## 2026-07-02 · [Find a Safe Walk Through a Grid](https://leetcode.com/problems/find-a-safe-walk-through-a-grid/?envType=daily-question&envId=2026-07-02) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **4/9**
+
+A lighter version of the previous problem.
+
+```java
+class Solution {
+    int[][] dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    boolean findSafeWalk(List<List<Integer>> grid, int health) {
+        int m = grid.size(), n = grid.get(0).size();
+        int[][] f  =  new int[m][n];
+        for (int i = 0; i < m; i++) 
+            for (int j = 0; j < n; j++)
+                f[i][j] = -grid.get(i).get(j);
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<>((e1, e2) -> e2[2] - e1[2]);
+        pq.offer(new int[]{0, 0, f[0][0] + health});
+
+        while (!pq.isEmpty()) {
+            int[] poll = pq.poll();
+            int i = poll[0], j = poll[1], v = poll[2];
+            for (int[] d : dirs) {
+                int x = i + d[0], y = j + d[1];
+                if (x >= 0 && x < m && y >= 0 && y < n && f[x][y] < 1000) {
+                    if (x == m - 1 && y == n - 1) return f[x][y] + v > 0;
+                    pq.offer(new int[]{x, y, f[x][y] + v});                    
+                    f[x][y] = 1000;
+                }
+            }
+        }
+        
+        throw new RuntimeException();
+    }
+}
+```
+
+Runtime **14 ms** (beats 49.99%) · Memory **46.81 MB** (beats 78.41%) · Time taken **33m 27s**
+
+## 2026-07-01 · [Find the Safest Path in a Grid](https://leetcode.com/problems/find-the-safest-path-in-a-grid/?envType=daily-question&envId=2026-07-01) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I understood the approach in about fifteen minutes, but I could not implement it. I have not written BFS in a long time and I still do not write it cleanly — I used to create a new list instead of one queue. I am not good at working with coordinates by hand either. I am not too worried about the medium label this time, the algorithm itself is clear to me. A long stretch of drilling manual writes lies ahead.
+
+Final solution based on [eunice](https://leetcode.com/problems/find-the-safest-path-in-a-grid/solutions/8368584/solution-by-la_castille-6y31) solution:
+
+```java
+class Solution {
+    int[][] dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    int maximumSafenessFactor(List<List<Integer>> grid) {
+        int n = grid.size();
+
+        int[][] a = new int[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                a[i][j] = grid.get(i).get(j);
+
+        Queue<int[]> q = new ArrayDeque<>();
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                if (a[i][j] == 1)
+                    q.offer(new int[]{i, j});
+
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int i = cur[0], j = cur[1];
+            int v = a[i][j];
+            for (int[] d : dirs) {
+                int x = i + d[0], y = j + d[1];
+                if (Math.min(x, y) >= 0 && Math.max(x, y) < n && a[x][y] == 0) {
+                    a[x][y] = v + 1;
+                    q.offer(new int[]{x, y});
+                }
+            }
+        }
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((e1, e2) -> e2[2] - e1[2]);
+        pq.offer(new int[]{0, 0, a[0][0]});
+
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int i = cur[0], j = cur[1], sf = cur[2];
+            if (i == n - 1 && j == n - 1)
+                return sf - 1;
+            for (int[] d : dirs) {
+                int x = i + d[0], y = j + d[1];
+                if (Math.min(x, y) >= 0 && Math.max(x, y) < n && a[x][y] > 0) {
+                    pq.offer(new int[]{x, y, Math.min(sf, a[x][y])});
+                    a[x][y] *= -1;
+                }
+            }
+        }
+        throw new RuntimeException();
+    }
+}
+```
+
+## 2026-06-30 · [Number of Substrings Containing All Three Characters](https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/?envType=daily-question&envId=2026-06-30) · (4 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+I was not in the best state of mind, but I decided it would do for a medium. I panicked and looked at the problem hints, which only made my solution worse, yet they did lead me to the answer.
+
+```java
+class Solution {
+    int numberOfSubstrings(String s) {
+        int n = s.length();
+        int out = 0;
+        Deque<Integer> stA = new ArrayDeque<>();
+        Deque<Integer> stB = new ArrayDeque<>();
+        Deque<Integer> stC = new ArrayDeque<>();
+        for (int j = 0; j < n; j++) {
+            switch (s.charAt(j)) {
+                case 'a' -> stA.push(j);
+                case 'b' -> stB.push(j);
+                case 'c' -> stC.push(j);
+            }
+            if (!stA.isEmpty() && !stB.isEmpty() && !stC.isEmpty()) {
+                int i = Math.min(Math.min(stA.peek(), stB.peek()), stC.peek());
+                out += i + 1;
+            }
+        }
+        return out;
+    }
+}
+```
+
+Runtime **29 ms** (beats 18.45%) · Memory **47.43 MB** (beats 5.43%) · Time taken **39m 10s**
+
+TL solution:
+
+```java
+class Solution {
+    int numberOfSubstrings(String s) {
+        int n = s.length();
+        int out = 0;
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            int cntA = 0, cntB = 0, cntC = 0;
+            for ( ; j < n && (cntA == 0 || cntB == 0 || cntC == 0); j++) {
+                switch (s.charAt(j)) {
+                    case 'a' -> cntA++;
+                    case 'b' -> cntB++;
+                    case 'c' -> cntC++;
+                }
+            }
+            if (cntA > 0 && cntB > 0 && cntC > 0) out += n - j + 1;
+            else break;
+        }
+        return out;
+    }
+}
+```
+
+Beautification — I already had this shape when I submitted, but I was afraid to spend the time on it.
+
+```java
+class Solution {
+    int numberOfSubstrings(String s) {
+        int n = s.length();
+        int out = 0;
+        int a = -1, b = -1, c = -1;
+        for (int i = 0; i < n; i++) {
+            switch (s.charAt(i)) {
+                case 'a' -> a = i;
+                case 'b' -> b = i;
+                case 'c' -> c = i;
+            }
+            if (a >= 0 && b >= 0 && c >= 0)
+                out += Math.min(Math.min(a, b), c) + 1;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-06-29 · [Number of Strings That Appear as Substrings in Word](https://leetcode.com/problems/number-of-strings-that-appear-as-substrings-in-word/?envType=daily-question&envId=2026-06-29) · (3 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+I knew there was a String method for this, but not its exact name, so I had already started on a raw brute-force check before `contains` came back.
+
+```java
+class Solution {
+    int numOfStrings(String[] patterns, String word) {
+        int cnt = 0;
+        for (String p : patterns) if (word.contains(p)) cnt++;
+        return cnt;
+    }
+}
+```
+
+Runtime **1 ms** (beats 75.75%) · Memory **42.80 MB** (beats 98.28%) · Time taken **6m 2s**
+
 ## 2026-06-28 · [Maximum Element After Decreasing and Rearranging](https://leetcode.com/problems/maximum-element-after-decreasing-and-rearranging/?envType=daily-question&envId=2026-06-28) · (2 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **2/9**
