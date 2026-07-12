@@ -8,7 +8,7 @@
 
 2. **LeetCode** — **1 hour solo** on the Daily Question; hints/editorials afterward if needed.  
    **Goal:** 100 consecutive days of solo-only solving.  
-   **ETA:** ~1-3 years.  
+   **ETA:** ~1-4 years.  
    **Diary:** [leetcode-100-diary.md](leetcode-100-diary.md)
 
 [![LeetCode streak](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Falfa-leetcode-api.onrender.com%2Fnikdenalb%2Fcalendar&query=%24.streak&logo=leetcode&label=streak&color=FFA116)](https://leetcode.com/u/nikdenalb/)

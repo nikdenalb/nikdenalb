@@ -8,6 +8,277 @@ Progress rule: solved problems increase the counter by 1; an unsolved task reset
 
 Record streak: **4**
 
+## 2026-07-12 · [Rank Transform of an Array](https://leetcode.com/problems/rank-transform-of-an-array/?envType=daily-question&envId=2026-07-12) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **3/9**
+
+The time was not competitive. This is not an easy task for me, and not solving it quickly upset me.
+
+```java
+class Solution {
+    int[] arrayRankTransform(int[] arr) {
+        int n = arr.length;
+        if (n == 0) return new int[0];
+        int[] sort = arr.clone(); 
+        Arrays.sort(sort);
+        int[] rank = new int[n];
+        rank[0] = 1;
+        for (int i = 1; i < n; i++) rank[i] = sort[i] == sort[i - 1] ? rank[i - 1] : rank[i - 1] + 1;
+        int[] out = new int[n];
+        for (int i = 0; i < n; i++) out[i] = rank[Arrays.binarySearch(sort, arr[i])];
+        return out;
+    }
+}
+```
+
+Runtime **29 ms** (beats 84.49%) · Memory **68.80 MB** (beats 97.17%) · Time taken **24m 58s**
+
+## 2026-07-11 · [Count the Number of Complete Components](https://leetcode.com/problems/count-the-number-of-complete-components/?envType=daily-question&envId=2026-07-11) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+Did not finish on time and did not really try. Solved it myself with a few small hints from a free LLM.
+
+```java
+class Solution {
+    int countCompleteComponents(int n, int[][] edges) {
+        int[] nods = new int[n];
+        int[] comp = new int[n];
+        for (int i = 0; i < n; i++) comp[i] = i;
+
+        for (int i = 0; i < edges.length; i++) {
+            int a = Math.min(edges[i][0], edges[i][1]);
+            int b = Math.max(edges[i][0], edges[i][1]);
+            nods[a]++;
+            nods[b]++;
+            edges[i][0] = a;
+            edges[i][1] = b;
+        }
+        Arrays.sort(edges, (a, b) -> Integer.compare(a[0], b[0]));
+
+        for (int[] ed : edges) {
+            int ra = ed[0];
+            while (comp[ra] != ra) ra = comp[ra];
+            int rb = ed[1];
+            while (comp[rb] != rb) rb = comp[rb];
+            int root = Math.min(ra, rb);
+            comp[ra] = root;
+            comp[rb] = root;
+        }
+
+        for (int i = 0; i < n; i++) {
+            int r = i;
+            while (comp[r] != r) r = comp[r];
+            comp[i] = r;
+        }
+
+        int[] cnt = new int[n];
+        int[] ecnt = new int[n];
+        for (int i = 0; i < n; i++) cnt[comp[i]]++;
+        for (int[] ed : edges) ecnt[comp[ed[0]]]++;
+
+        int out = 0;
+        for (int i = 0; i < n; i++) {
+            if (cnt[i] == 0 || comp[i] != i) continue;
+            int m = cnt[i];
+            boolean ok = true;
+            for (int j = 0; j < n; j++)
+                if (comp[j] == i && nods[j] != m - 1) ok = false;
+            if (ok && ecnt[i] == m * (m - 1) / 2) out++;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-07-10 · [Path Existence Queries in a Graph II](https://leetcode.com/problems/path-existence-queries-in-a-graph-ii/?envType=daily-question&envId=2026-07-10) · (0 / 100)
+
+LeetCode difficulty **Hard**
+
+This is above me. I think I should add 1 year to ETA.
+
+Final solution based on [Manjeet Dhayal](https://leetcode.com/problems/path-existence-queries-in-a-graph-ii/solutions/8387529/how-to-convert-problem-to-a-standard-pro-114m/?envType=daily-question&envId=2026-07-10) solution:
+
+```java
+class Solution {
+    int[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        int[][] sortedByValue = new int[n][2];
+        int[] positionInSorted = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            sortedByValue[i][0] = nums[i];
+            sortedByValue[i][1] = i;
+        }
+        Arrays.sort(sortedByValue, (a, b) -> Integer.compare(a[0], b[0]));
+
+        for (int i = 0; i < n; i++)
+            positionInSorted[sortedByValue[i][1]] = i;
+
+        int[] componentRoot = new int[n];
+        componentRoot[0] = 0;
+        for (int i = 1; i < n; i++)
+            if (sortedByValue[i][0] - sortedByValue[i - 1][0] <= maxDiff)
+                componentRoot[i] = componentRoot[i - 1];
+            else
+                componentRoot[i] = i;
+
+        int[] furthestReach = new int[n];
+        int left = 0, right = 0;
+        while (left < n) {
+            while (right < n && sortedByValue[right][0] - sortedByValue[left][0] <= maxDiff) right++;
+            furthestReach[left] = right - 1;
+            left++;
+        }
+
+        int levels = 17;
+        int[][] jumpTable = new int[levels][n];
+        for (int i = 0; i < n; i++) jumpTable[0][i] = furthestReach[i];
+
+        for (int level = 1; level < levels; level++)
+            for (int node = 0; node < n; node++)
+                jumpTable[level][node] = jumpTable[level - 1][jumpTable[level - 1][node]];
+
+        int m = queries.length;
+        int[] out = new int[m];
+        for (int i = 0; i < m; i++) {
+            int leftIdx = queries[i][0];
+            int rightIdx = queries[i][1];
+            int leftPos = positionInSorted[leftIdx];
+            int rightPos = positionInSorted[rightIdx];
+
+            if (componentRoot[leftPos] != componentRoot[rightPos]) {
+                out[i] = -1;
+                continue;
+            }
+            if (leftPos > rightPos) {
+                int temp = leftPos;
+                leftPos = rightPos;
+                rightPos = temp;
+            }
+            if (leftPos == rightPos) {
+                out[i] = 0;
+                continue;
+            }
+
+            int hops = 0;
+            for (int level = levels - 1; level >= 0; level--)
+                if (jumpTable[level][leftPos] < rightPos) {
+                    hops += 1 << level;
+                    leftPos = jumpTable[level][leftPos];
+                }
+            out[i] = hops + 1;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-07-09 · [Path Existence Queries in a Graph I](https://leetcode.com/problems/path-existence-queries-in-a-graph-i/?envType=daily-question&envId=2026-07-09) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+I did it late, and I think when fresh I could have done it about five minutes faster.
+
+```java
+class Solution {
+    boolean[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        boolean[] out = new boolean[queries.length];
+        int t = nums[0];
+        nums[0] = 0;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] - t <= maxDiff) {
+                t = nums[i];
+                nums[i] = nums[i - 1];
+            } else {
+                t = nums[i];
+                nums[i] = i;
+            }
+        }
+        for (int i = 0; i < queries.length; i++) out[i] = nums[queries[i][0]] == nums[queries[i][1]];
+        return out;
+    }
+}
+```
+
+Runtime **2 ms** (beats 100.00%) · Memory **167.86 MB** (beats 17.48%) · Time taken **14m 18s**
+
+## 2026-07-08 · [Concatenate Non-Zero Digits and Multiply by Sum II](https://leetcode.com/problems/concatenate-non-zero-digits-and-multiply-by-sum-ii/?envType=daily-question&envId=2026-07-08) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **6/9**
+
+I solved it myself, but it took somewhere around one and a half hours.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+    
+    int[] sumAndMultiply(String s, int[][] queries) {
+        int n = s.length();
+        int[] psum = new int[n + 1];
+        int[] x = new int[n + 1];
+        int[] pow10 = new int[n + 1];
+        int[] pw = new int[n + 1];
+        pw[0] = 1;
+        for (int i = 1; i <= n; i++) pw[i] = (int) (10L * pw[i - 1] % mod);
+        
+        for (int i = 1; i <= n; i++) {
+            if (s.charAt(i - 1) == '0') {
+                psum[i] = psum[i - 1]; 
+                x[i] = x[i - 1];
+                pow10[i] = pow10[i - 1];
+                continue;
+            }
+            int d = Integer.parseInt(s.substring(i - 1, i));
+            psum[i] = psum[i - 1] + d;
+            pow10[i] = pow10[i - 1] + 1;
+            x[i] = (int) ((10L * x[i - 1] + d) % mod);
+        }
+        
+        int m = queries.length;
+        int[] out = new int[m];
+        
+        for (int i = 0; i < m; i++) {
+            int l = queries[i][0];
+            int r = queries[i][1];
+            int p = pw[pow10[r + 1] - pow10[l]];
+            int xout = (int) (((long) mod + x[r + 1] - (long) x[l] * p % mod) % mod);
+            int sum = psum[r + 1] - psum[l];
+            out[i] = (int) ((long) xout * sum % mod);
+        }
+        
+        return out;
+    }
+}
+```
+
+## 2026-07-07 · [Concatenate Non-Zero Digits and Multiply by Sum I](https://leetcode.com/problems/concatenate-non-zero-digits-and-multiply-by-sum-i/?envType=daily-question&envId=2026-07-07) · (4 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+I will skip beautification — the problem is too simple. It leaves me wondering why I think so messy.
+
+```java
+class Solution {
+    long sumAndMultiply(int n) {
+        if (n == 0) return 0;
+        int x = 0, sum = 0, cnt = -1;
+        while (n > 0) {
+            int t = n % 10;
+            if (t > 0) {
+                cnt++;
+                sum += t;
+                for (int i = 0; i < cnt; i++) t *= 10;
+                x += t;
+            }
+            n /= 10;
+        }
+        return (long) x * sum;     
+    }
+}
+```
+
+Runtime **1 ms** (beats 99.85%) · Memory **42.79 MB** (beats 35.05%) · Time taken **8m 1s**
+
 ## 2026-07-06 · [Remove Covered Intervals](https://leetcode.com/problems/remove-covered-intervals/?envType=daily-question&envId=2026-07-06) · (3 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **2/9**

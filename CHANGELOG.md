@@ -1,3 +1,7 @@
+### [0.0.7]–[0.0.8] - <small>2026-07-07 – 2026-07-12</small>
+
+- Planned updates only
+
 ### [0.0.6]–[0.0.7] - <small>2026-06-28 – 2026-07-06</small>
 
 - Planned updates only
