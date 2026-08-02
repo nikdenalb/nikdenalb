@@ -1,3 +1,9 @@
+## [0.1.0] watchnest - <small>2026-08-02</small>
+
+- Started intensive work on watchnest (not reflected in this project)
+- Switched to monthly updates (early in the month, no fixed day)
+- Updated `README.md`: SQL **ETA** target date only (no week count)
+
 ### [0.0.7]–[0.0.8] - <small>2026-07-07 – 2026-07-12</small>
 
 - Planned updates only

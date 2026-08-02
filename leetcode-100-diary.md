@@ -1,12 +1,739 @@
 # LeetCode 100 diary
 
-Personal notes from my [LeetCode 100](https://leetcode.com/) streak: solutions, submission stats, and quick reflections. This diary is an **experiment** — I may stop maintaining it at any time.
+Personal notes from my [LeetCode 100](https://leetcode.com/) streak: solutions, submission stats, and quick reflections. I may stop maintaining it at any time.
 
 Subjective difficulty is the rating I give immediately after the attempt: `1`-`3` easy, `4`-`6` medium, `7`-`9` hard.
 
 Progress rule: solved problems increase the counter by 1; an unsolved task resets it to 0.
 
-Record streak: **4**
+Record streak: **6**
+
+## 2026-08-02 · [Stone Game](https://leetcode.com/problems/stone-game/?envType=daily-question&envId=2026-08-02) · (4 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I worked through the non-recursive approach in [eunice](https://leetcode.com/problems/predict-the-winner/solutions/8433447/solution-by-la_castille-ia0j)'s write-up for yesterday's daily. Today I only needed to repeat it.
+
+```java
+class Solution {
+    boolean stoneGame(int[] piles) {
+        int n = piles.length;
+        if (n % 2 == 0) return true;
+        int[] dp = new int[n];
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i] = piles[i];
+            for (int j = i + 1; j < n; j++) dp[j] = Math.max(piles[i] - dp[j], piles[j] - dp[j - 1]);
+        }
+        return dp[n - 1] > 0;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **43.27 MB** (beats 35.84%) · Time taken **12m 5s**
+
+## 2026-08-01 · [Predict the Winner](https://leetcode.com/problems/predict-the-winner/?envType=daily-question&envId=2026-08-01) · (3 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I could not implement a solution without recursion, after sitting a long time on attempts at that. Solved it poorly just to submit.
+
+```java
+class Solution {
+    boolean predictTheWinner(int[] nums) {
+        return diff(nums, 0, nums.length - 1) >= 0;
+    }
+
+    int diff(int[] nums, int i, int j) {
+        if (i == j) return nums[i];
+        if (j - i == 1) return Math.max(nums[i] - nums[j], nums[j] - nums[i]);
+        return Math.max(nums[i] - diff(nums, i + 1, j), nums[j] - diff(nums, i, j - 1));
+    }
+}
+```
+
+Runtime **37 ms** (beats 31.03%) · Memory **42.92 MB** (beats 23.56%) · Time taken **29m 39s**
+
+## 2026-07-31 · [Minimum Number of Pushes to Type Word II](https://leetcode.com/problems/minimum-number-of-pushes-to-type-word-ii/?envType=daily-question&envId=2026-07-31) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+```java
+class Solution {
+    int minimumPushes(String word) {
+        int[] arr = new int[26];
+        for (char c : word.toCharArray()) arr[c - 'a']++;
+        Arrays.sort(arr);
+        int out = 0;
+        for (int i = 25, cnt = 8; i >= 0; i--, cnt++) out += arr[i] * (cnt / 8);
+        return out;
+    }
+}
+```
+
+Runtime **9 ms** (beats 94.22%) · Memory **48.20 MB** (beats 32.08%) · Time taken **7m 31s**
+
+## 2026-07-30 · [Minimum Number of Pushes to Type Word I](https://leetcode.com/problems/minimum-number-of-pushes-to-type-word-i/?envType=daily-question&envId=2026-07-30) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int minimumPushes(String word) {
+        int n = word.length();
+        int out = 0;
+        for (int i = 1; n > 0; i++) {
+            out += Math.min(n, 8) * i;
+            n -= 8;
+        }
+        return out;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **43.34 MB** (beats 28.23%) · Time taken **8m 58s**
+
+## 2026-07-29 · [Smallest Palindromic Rearrangement II](https://leetcode.com/problems/smallest-palindromic-rearrangement-ii/?envType=daily-question&envId=2026-07-29) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+I got scared of a hard problem and read this one before solving it. The excuse is lack of time — a hard task can stretch to 3–4 hours. There was a chance to solve this one, but I cannot count it.
+
+```java
+class Solution {
+    String smallestPalindrome(String s, int k) {
+        int len = s.length() / 2;
+        int[] lts = new int[26];
+        for (int i = 0; i < len; i++) lts[s.charAt(i) - 'a']++;
+
+        if (cntPerms(lts, k) < k) return "";
+
+        StringBuilder out = new StringBuilder();
+        for (int p = 0; p < len; p++) {
+            for (int i = 0; i < 26; i++) {
+                if (lts[i] == 0) continue;
+
+                lts[i]--;
+                int cnt = cntPerms(lts, k);
+                if (cnt >= k) {
+                    out.append((char) (i + 'a'));
+                    break;
+                }
+
+                k -= cnt;
+                lts[i]++;
+            }
+        }
+
+        StringBuilder h = new StringBuilder(out);
+        if (s.length() % 2 == 1) out.append(s.charAt(len));
+        out.append(h.reverse());
+        return out.toString();
+    }
+
+    int cntPerms(int[] lts, int k) {
+        int bag = 0;
+        for (int e : lts) bag += e;
+
+        long out = 1;
+        for (int e : lts) {
+            int r = Math.min(e, bag - e);
+            for (int i = 1; i <= r; i++) {
+                out = out * (bag - i + 1) / i;
+                if (out >= k) return k;
+            }
+            bag -= e;
+        }
+        return (int) out;
+    }
+}
+```
+
+## 2026-07-28 · [Smallest Palindromic Rearrangement I](https://leetcode.com/problems/smallest-palindromic-rearrangement-i/?envType=daily-question&envId=2026-07-28) · (6 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+```java
+class Solution {
+    String smallestPalindrome(String s) {
+        int len = (s.length()) / 2;
+        int[] lts = new int[26];
+        for (int i = 0; i < len; i++) lts[s.charAt(i) - 'a']++;
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < 26; i++) for (int j = 0; j < lts[i]; j++) out.append((char) (i + 'a'));
+        StringBuilder h = new StringBuilder(out);
+        if (s.length() % 2 == 1) out.append(s.charAt(len));
+        out.append(h.reverse());
+        return out.toString();
+    }
+}
+```
+
+Runtime **25 ms** (beats 76.71%) · Memory **48.49 MB** (beats 10.04%) · Time taken **20m 26s**
+
+## 2026-07-27 · [Maximum Product of Two Elements in an Array](https://leetcode.com/problems/maximum-product-of-two-elements-in-an-array/?envType=daily-question&envId=2026-07-27) · (5 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int maxProduct(int[] nums) {
+        int a = 0, b = 0;
+        for (int n : nums) {
+            if (n > a) {
+                b = a;
+                a = n;
+            } else if (n > b) b = n;
+        }
+        return (a - 1) * (b - 1);
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **44.41 MB** (beats 73.61%) · Time taken **2m 46s**
+
+## 2026-07-26 · [Maximum Product of Three Numbers](https://leetcode.com/problems/maximum-product-of-three-numbers/?envType=daily-question&envId=2026-07-26) · (4 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **3/9**
+
+I had already solved a problem like this on CodeRun when I was just starting to get interested in algorithms. One of the best easy problems.
+
+```java
+class Solution {
+    int maximumProduct(int[] nums) {
+        int max1 = Integer.MIN_VALUE, max2 = Integer.MIN_VALUE, max3 = Integer.MIN_VALUE;
+        int min1 = Integer.MAX_VALUE, min2 = Integer.MAX_VALUE;
+        for (int n : nums) {
+            if (n > max1) {
+                max3 = max2;
+                max2 = max1;
+                max1 = n;
+            } else if (n > max2) {
+                max3 = max2;
+                max2 = n;
+            } else if (n > max3) max3 = n;
+            if (n < min1) {
+                min2 = min1;
+                min1 = n;
+            } else if (n < min2) min2 = n;
+        }
+        return Math.max(min1 * min2 * max1, max1 * max2 * max3);
+    }
+}
+```
+
+Runtime **2 ms** (beats 99.61%) · Memory **47.05 MB** (beats 97.34%) · Time taken **6m 11s**
+
+## 2026-07-25 · [Maximum Product of Two Digits](https://leetcode.com/problems/maximum-product-of-two-digits/?envType=daily-question&envId=2026-07-25) · (3 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int maxProduct(int n) {
+        int a = 0, b = 0;
+        while (n > 0) {
+            int t = n % 10;
+            if (t > a) {
+                b = a;
+                a = t;
+            } else if (t > b) b = t;
+            n /= 10;
+        }
+        return a * b;
+    }
+}
+```
+
+Runtime **1 ms** (beats 100.00%) · Memory **42.49 MB** (beats 85.43%) · Time taken **4m 3s**
+
+## 2026-07-24 · [Number of Unique XOR Triplets II](https://leetcode.com/problems/number-of-unique-xor-triplets-ii/?envType=daily-question&envId=2026-07-24) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    int uniqueXorTriplets(int[] nums) {
+        int n = nums.length;
+        boolean[] set1 = new boolean[2048];
+        boolean[] set2 = new boolean[2048];
+        for (int e : nums) set1[e] = true;
+        for (int i = 0; i < 2048; i++) {
+            if (!set1[i]) continue;
+            for (int j = 0; j < 2048; j++) {
+                if (!set1[j]) continue;
+                set2[i ^ j] = true;
+            }
+        } 
+        int out = 0;
+        boolean[] set3 = new boolean[2048];
+        for (int i = 0; i < 2048; i++) {
+            if (!set1[i]) continue;
+            for (int j = 0; j < 2048; j++) {
+                if (!set2[j]) continue;
+                int x = i ^ j;
+                if (!set3[x]) out++;
+                set3[x] = true;
+            }
+        }
+        return out;
+    }
+}
+```
+
+Runtime **359 ms** (beats 43.64%) · Memory **46.59 MB** (beats 98.18%) · Time taken **26m 17s**
+
+## 2026-07-23 · [Number of Unique XOR Triplets I](https://leetcode.com/problems/number-of-unique-xor-triplets-i/?envType=daily-question&envId=2026-07-23) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **4/9**
+
+A good problem. Little code and a lot of thinking.
+
+```java
+class Solution {
+    int uniqueXorTriplets(int[] nums) {
+        int n = nums.length;
+        if (n <= 2) return n;
+        int out = 1;
+        while (out <= n) out <<= 1;
+        return out;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **124.94 MB** (beats 98.04%) · Time taken **15m 4s**
+
+## 2026-07-22 · [Maximize Active Section with Trade II](https://leetcode.com/problems/maximize-active-section-with-trade-ii/?envType=daily-question&envId=2026-07-22) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+Far from an independent solution.
+
+```java
+class Solution {
+    List<Integer> maxActiveSectionsAfterTrade(String s, int[][] queries) {
+        int n = s.length();
+        List<Integer> list = new ArrayList<>();
+        List<Integer> pos = new ArrayList<>();
+        int[] blockAt = new int[n];
+        char p = s.charAt(0);
+        int cnt = 0, ones = 0, block = 0;
+
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == '1') ones++;
+            if (c == p) cnt++;
+            else {
+                list.add(cnt);
+                pos.add(block);
+                p = c;
+                cnt = 1;
+                block = i;
+            }
+            blockAt[i] = list.size();
+        }
+        list.add(cnt);
+        pos.add(block);
+
+        int m = queries.length;
+        List<Integer> out = new ArrayList<>(m);
+
+        int z0 = s.charAt(0) == '0' ? 0 : 1;
+        int zCnt = 0;
+        for (int i = z0; i < list.size(); i += 2) zCnt++;
+        if (zCnt < 2) {
+            for (int i = 0; i < m; i++) out.add(ones);
+            return out;
+        }
+
+        int[] merge = new int[zCnt - 1];
+        for (int i = z0, t = 0; i + 2 < list.size(); i += 2, t++)
+            merge[t] = list.get(i) + list.get(i + 2);
+        SparseTable st = new SparseTable(merge);
+
+        int[] groupAt = new int[n];
+        int cur = -1;
+        for (int i = 0; i < n; i++) {
+            int bi = blockAt[i];
+            if (bi >= z0 && (bi - z0) % 2 == 0)
+                cur = (bi - z0) / 2;
+            groupAt[i] = cur;
+        }
+
+        for (int qi = 0; qi < m; qi++) {
+            int l = queries[qi][0], r = queries[qi][1];
+            int gL = groupAt[l], gR = groupAt[r];
+
+            int leftCnt = -1, rightCnt = -1;
+            if (s.charAt(l) == '0') {
+                int bi = blockAt[l];
+                leftCnt = pos.get(bi) + list.get(bi) - l;
+            }
+            if (s.charAt(r) == '0') {
+                int bi = blockAt[r];
+                rightCnt = r - pos.get(bi) + 1;
+            }
+
+            int left = gL + 1;
+            int right = s.charAt(r) == '0' ? gR - 1 : gR;
+
+            int best = ones;
+            if (left <= right - 1)
+                best = Math.max(best, ones + st.query(left, right - 1));
+            if (s.charAt(l) == '0' && s.charAt(r) == '0' && gL + 1 == gR)
+                best = Math.max(best, ones + leftCnt + rightCnt);
+            if (s.charAt(l) == '0' && gL + 1 <= right)
+                best = Math.max(best, ones + leftCnt + list.get(z0 + 2 * (gL + 1)));
+            if (s.charAt(r) == '0' && left <= gR - 1)
+                best = Math.max(best, ones + rightCnt + list.get(z0 + 2 * (gR - 1)));
+            out.add(best);
+        }
+        return out;
+    }
+
+    class SparseTable {
+        int[][] table;
+        int[] log;
+
+        SparseTable(int[] a) {
+            int n = a.length;
+            log = new int[n + 1];
+            for (int i = 2; i <= n; i++) log[i] = log[i / 2] + 1;
+            int k = log[n] + 1;
+            table = new int[k][n];
+            for (int i = 0; i < n; i++) table[0][i] = a[i];
+            for (int j = 1; j < k; j++)
+                for (int i = 0; i + (1 << j) <= n; i++)
+                    table[j][i] = Math.max(table[j - 1][i], table[j - 1][i + (1 << (j - 1))]);
+        }
+
+        int query(int l, int r) {
+            int j = log[r - l + 1];
+            return Math.max(table[j][l], table[j][r - (1 << j) + 1]);
+        }
+    }
+}
+```
+
+## 2026-07-21 · [Maximize Active Section with Trade I](https://leetcode.com/problems/maximize-active-section-with-trade-i/?envType=daily-question&envId=2026-07-21) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+Sometimes I struggle to invent comments. Next time I will just leave that field empty.
+
+```java
+class Solution {
+    int maxActiveSectionsAfterTrade(String s) {
+        List<Integer> list = new ArrayList<>();
+        char p = s.charAt(0);
+        int cnt = 0, ones = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '1') ones++;
+            if (c == p) cnt++;
+            else {
+                list.add(cnt);
+                p = c;
+                cnt = 1;
+            }
+        }
+        list.add(cnt);
+
+        int maxSwap = 0;
+        for (int i = s.charAt(0) == '0' ? 0 : 1; i < list.size(); i += 2)
+            if (i + 2 < list.size())
+                maxSwap = Math.max(maxSwap, list.get(i) + list.get(i + 2));
+
+        return ones + maxSwap;
+    }
+}
+```
+
+Runtime **71 ms** (beats 76.66%) · Memory **48.10 MB** (beats 31.80%) · Time taken **21m 55s**
+
+## 2026-07-20 · [Shift 2D Grid](https://leetcode.com/problems/shift-2d-grid/?envType=daily-question&envId=2026-07-20) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+If you do not try to solve it in-place, it is a fairly simple problem despite the bulky code.
+
+```java
+class Solution {
+    List<List<Integer>> shiftGrid(int[][] grid, int k) {
+        int m = grid.length, n = grid[0].length;
+        int mod = m * n;
+        k %= mod;
+        int[][] out = new int[m][n];
+        for (int d = 0; d < mod; d++) out[((k + d) % mod) / n][(k + d) % n] = grid[(d % mod) / n][d % n];
+        List<List<Integer>> outList = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            List<Integer> list = new ArrayList();
+            for (int j = 0; j < n; j++) list.add(out[i][j]);
+            outList.add(list);
+        }
+        return outList;
+    }
+}
+```
+
+Runtime **5 ms** (beats 88.49%) · Memory **47.22 MB** (beats 38.71%) · Time taken **10m 31s**
+
+## 2026-07-19 · [Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/?envType=daily-question&envId=2026-07-19) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **7/9**
+
+I am writing this entry five days later. I did not solve the problem and no longer remember the details. I need to try to log entries right away, but this was a stretch when I wanted to drop the whole thing.
+
+```java
+class Solution {
+    String smallestSubsequence(String s) {
+        int[] freq = new int[26];
+        boolean[] seen = new boolean[26];
+        Deque<Character> st = new ArrayDeque<>();
+
+        for (int i = 0; i < s.length(); i++)
+            freq[s.charAt(i) - 'a']++;
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int x = c - 'a';
+            freq[x]--;
+            if (seen[x]) continue;
+
+            while (!st.isEmpty() && st.peek() > c && freq[st.peek() - 'a'] > 0) {
+                seen[st.peek() - 'a'] = false;
+                st.pop();
+            }
+            st.push(c);
+            seen[x] = true;
+        }
+
+        StringBuilder out = new StringBuilder();
+        while (!st.isEmpty()) out.append(st.pop());
+        return out.reverse().toString();
+    }
+}
+```
+
+## 2026-07-18 · [Find Greatest Common Divisor of Array](https://leetcode.com/problems/find-greatest-common-divisor-of-array/?envType=daily-question&envId=2026-07-18) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **1/9**
+
+The problem is unpleasant because of its inconsistency.
+
+```java
+class Solution {
+    int findGCD(int[] nums) {
+        int max = 1, min = 1000;
+        for (int num : nums) {
+            max = Math.max(max, num);
+            min = Math.min(min, num);
+        }
+        return gcd(max, min);
+    }
+    
+    int gcd(int a, int b) {
+        while (b > 0) {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **44.92 MB** (beats 73.70%) · Time taken **3m 29s**
+
+## 2026-07-17 · [Sorted GCD Pair Queries](https://leetcode.com/problems/sorted-gcd-pair-queries/?envType=daily-question&envId=2026-07-17) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+Did not solve it. In a good state I might have managed it, but in the daily routine it is far from always possible to solve in such a state.
+
+Final solution based on [eunice](https://leetcode.com/problems/sorted-gcd-pair-queries/solutions/8402129/solution-by-la_castille-9n7e/?envType=daily-question&envId=2026-07-17) solution:
+
+```java
+class Solution {
+    int[] gcdValues(int[] nums, long[] queries) {
+        int maxValue = 0;
+        for (int num : nums) maxValue = Math.max(maxValue, num);
+
+        int[] freq = new int[maxValue + 1];
+        long[] gcdCount = new long[maxValue + 1];
+
+        for (int num : nums) freq[num]++;
+
+        for (int d = maxValue; d >= 1; d--) {
+            long multiples = 0;
+            long higher = 0;
+            for (int j = d; j <= maxValue; j += d) {
+                multiples += freq[j];
+                higher += gcdCount[j];
+            }
+            gcdCount[d] = multiples * (multiples - 1) / 2 - higher;
+        }
+
+        for (int d = 1; d <= maxValue; d++)
+            gcdCount[d] += gcdCount[d - 1];
+
+        int m = queries.length;
+        int[] out = new int[m];
+        for (int i = 0; i < m; i++) {
+            long query = queries[i];
+            int left = 0, right = maxValue + 1;
+            while (left < right) {
+                int mid = (left + right) >>> 1;
+                if (gcdCount[mid] <= query) left = mid + 1;
+                else right = mid;
+            }
+            out[i] = left;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-07-16 · [Sum of GCD of Formed Pairs](https://leetcode.com/problems/sum-of-gcd-of-formed-pairs/?envType=daily-question&envId=2026-07-16) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+An implementation problem. I only set the difficulty high because of needing prefix sums and GCD.
+
+```java
+class Solution {
+    long gcdSum(int[] nums) {
+        int n = nums.length;
+        int[] prefixGcd = new int[n];
+        prefixGcd[0] = nums[0];
+        for (int i = 1, max = nums[0]; i < n; i++) {
+            max = Math.max(max, nums[i]);
+            prefixGcd[i] = gcd(max, nums[i]);
+        }
+        Arrays.sort(prefixGcd);
+        long out = 0;
+        for (int i = 0, j = n - 1; i < j; i++, j--) out += gcd(prefixGcd[i], prefixGcd[j]);
+        return out;
+    }
+
+    int gcd(int a, int b) {
+        while (b > 0) {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+Runtime **52 ms** (beats 99.50%) · Memory **107.66 MB** (beats 97.00%) · Time taken **11m 58s**
+
+## 2026-07-15 · [GCD of Odd and Even Sums](https://leetcode.com/problems/gcd-of-odd-and-even-sums/?envType=daily-question&envId=2026-07-15) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+Shameful for me. There will be no beautification on purpose.
+
+```java
+class Solution {
+    int gcdOfOddEvenSums(int n) {
+        int sumOdd = n * n;
+        int sumEven = (n * 2 + 2) * n / 2;
+        return gcd(sumOdd, sumEven);
+    }
+    
+    int gcd(int a, int b) {
+        while (b > 0) {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+Runtime **1 ms** (beats 83.02%) · Memory **42.80 MB** (beats 6.14%) · Time taken **10m 33s**
+
+## 2026-07-14 · [Find the Number of Subsequences With Equal GCD](https://leetcode.com/problems/find-the-number-of-subsequences-with-equal-gcd/?envType=daily-question&envId=2026-07-14) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+The problem seems easy, but thinking in three dimensions turned out too hard. Closed it with a few critical hints from an LLM. I will come back to it in two months and see how hard it is to write from scratch then. I know there is a more optimal solution, and I will look at that even later.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+
+    int subsequencePairCount(int[] nums) {
+        int n = nums.length;
+        int[][][] dp = new int[n + 1][201][201];
+        dp[0][0][0] = 1;
+
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int g1 = 0; g1 < 201; g1++) {
+                for (int g2 = 0; g2 < 201; g2++) {
+                    int cur = dp[i][g1][g2];
+                    if (cur == 0) continue;
+
+                    dp[i + 1][g1][g2] = (int) ((long) dp[i + 1][g1][g2] + cur) % mod;
+
+                    int ng1 = g1 == 0 ? num : gcd(g1, num);
+                    dp[i + 1][ng1][g2] = (int) ((long) dp[i + 1][ng1][g2] + cur) % mod;
+
+                    int ng2 = g2 == 0 ? num : gcd(g2, num);
+                    dp[i + 1][g1][ng2] = (int) ((long) dp[i + 1][g1][ng2] + cur) % mod;
+                }
+            }
+        }
+
+        int out = 0;
+        for (int g = 1; g < 201; g++)
+            out = (int) ((long) out + dp[n][g][g]) % mod;
+        return out;
+    }
+
+    int gcd(int a, int b) {
+        while (b > 0) {
+            int t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+## 2026-07-13 · [Sequential Digits](https://leetcode.com/problems/sequential-digits/?envType=daily-question&envId=2026-07-13) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+Coming up with a generator is not that easy, but it is not needed either.
+
+```java
+class Solution {
+    List<Integer> sequentialDigits(int low, int high) {
+        List<Integer> out = new ArrayList<>();
+        int[] val = new int[]{
+            12,         23,         34,         45,     56,     67,     78,     89,
+            123,        234,        345,        456,    567,    678,    789,
+            1234,       2345,       3456,       4567,   5678,   6789,
+            12345,      23456,      34567,      45678,  56789,
+            123456,     234567,     345678,     456789,
+            1234567,    2345678,    3456789,
+            12345678,   23456789,
+            123456789 
+        };
+        for (int v : val) {
+            if (v > high) break;
+            if (v >= low) out.add(v);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **42.23 MB** (beats 73.12%) · Time taken **30m 35s**
 
 ## 2026-07-12 · [Rank Transform of an Array](https://leetcode.com/problems/rank-transform-of-an-array/?envType=daily-question&envId=2026-07-12) · (1 / 100)
 
@@ -37,7 +764,7 @@ Runtime **29 ms** (beats 84.49%) · Memory **68.80 MB** (beats 97.17%) · Time t
 
 LeetCode difficulty **Medium** · Subjective difficulty **5/9**
 
-Did not finish on time and did not really try. Solved it myself with a few small hints from a free LLM.
+Did not finish on time and did not really try. Solved it myself with a few small hints from an LLM.
 
 ```java
 class Solution {
@@ -848,7 +1575,7 @@ class Solution {
 }
 ```
 
-After a little help from a free LLM:
+After a little help from an LLM:
 
 ```java
 class Solution {
