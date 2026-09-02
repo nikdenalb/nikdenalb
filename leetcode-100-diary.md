@@ -6,7 +6,1109 @@ Subjective difficulty is the rating I give immediately after the attempt: `1`-`3
 
 Progress rule: solved problems increase the counter by 1; an unsolved task resets it to 0.
 
-Record streak: **6**
+Record streak: **8**
+
+## 2026-09-02 · [Construct Uniform Parity Array I](https://leetcode.com/problems/construct-uniform-parity-array-i/?envType=daily-question&envId=2026-09-02) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    boolean uniformArray(int[] nums1) {
+        return true;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **44.78 MB** (beats 97.04%) · Time taken **10m 29s**
+
+## 2026-09-01 · [Minimum Moves to Clean the Classroom](https://leetcode.com/problems/minimum-moves-to-clean-the-classroom/?envType=daily-question&envId=2026-09-01) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **7/9**
+
+Today is a rest day, but I tried solving it on my own for half an hour, and it was all in vain.
+
+```java
+class Solution {
+    int[][] dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    int minMoves(String[] classroom, int energy) {
+        int m = classroom.length, n = classroom[0].length(), cnt = 0, sx = 0, sy = 0;
+        int[][] id = new int[m][n];
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++) {
+                char c = classroom[i].charAt(j);
+                if (c == 'S') {
+                    sx = i;
+                    sy = j;
+                } else if (c == 'L') id[i][j] = cnt++;
+            }
+
+        if (cnt == 0) return 0;
+
+        int[][][] vis = new int[m][n][1 << cnt];
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                Arrays.fill(vis[i][j], -1);
+
+        Queue<int[]> q = new ArrayDeque<>();
+        q.offer(new int[]{sx, sy, energy, (1 << cnt) - 1, 0});
+        vis[sx][sy][(1 << cnt) - 1] = energy;
+
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int i = p[0], j = p[1], e = p[2], mask = p[3], step = p[4];
+            if (mask == 0) return step;
+            if (e == 0) continue;
+
+            for (int[] d : dirs) {
+                int x = i + d[0], y = j + d[1];
+                if (x < 0 || x >= m || y < 0 || y >= n) continue;
+
+                char c = classroom[x].charAt(y);
+                if (c == 'X') continue;
+
+                int nextE = c == 'R' ? energy : e - 1;
+                int nextMask = mask;
+                if (c == 'L') nextMask &= ~(1 << id[x][y]);
+
+                if (vis[x][y][nextMask] >= nextE) continue;
+                vis[x][y][nextMask] = nextE;
+                q.offer(new int[]{x, y, nextE, nextMask, step + 1});
+            }
+        }
+        return -1;
+    }
+}
+```
+
+## 2026-08-31 · [Find the Minimum and Maximum Number of Nodes Between Critical Points](https://leetcode.com/problems/find-the-minimum-and-maximum-number-of-nodes-between-critical-points/?envType=daily-question&envId=2026-08-31) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+Closed the problem with minimal effort.
+
+```java
+class Solution {
+    int[] nodesBetweenCriticalPoints(ListNode head) {
+        int[] out = {-1, -1};
+        int first = -1, last = -1, i = 1, min = Integer.MAX_VALUE;
+        ListNode prev = head, cur = head.next;
+        while (cur != null && cur.next != null) {
+            if (cur.val > prev.val && cur.val > cur.next.val || cur.val < prev.val && cur.val < cur.next.val) {
+                if (first == -1) first = i;
+                else min = Math.min(min, i - last);
+                last = i;
+            }
+            prev = cur;
+            cur = cur.next;
+            i++;
+        }
+        if (first != last) {
+            out[0] = min;
+            out[1] = last - first;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-08-30 · [Removing Minimum and Maximum from Array](https://leetcode.com/problems/removing-minimum-and-maximum-from-array/?envType=daily-question&envId=2026-08-30) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+Closed the problem with minimal effort.
+
+```java
+class Solution {
+    int minimumDeletions(int[] nums) {
+        int n = nums.length, min = 0, max = 0;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < nums[min]) min = i;
+            if (nums[i] > nums[max]) max = i;
+        }
+        int i = Math.min(min, max), j = Math.max(min, max);
+        return Math.min(Math.min(j + 1, n - i), i + 1 + n - j);
+    }
+}
+```
+
+## 2026-08-29 · [Make Lexicographically Smallest Array by Swapping Elements](https://leetcode.com/problems/make-lexicographically-smallest-array-by-swapping-elements/?envType=daily-question&envId=2026-08-29) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **4/9**
+
+Closed the problem with minimal effort.
+
+```java
+class Solution {
+    int[] lexicographicallySmallestArray(int[] nums, int limit) {
+        int n = nums.length;
+        int[][] a = new int[n][2];
+        for (int p = 0; p < n; p++) {
+            a[p][0] = nums[p];
+            a[p][1] = p;
+        }
+        Arrays.sort(a, (p, r) -> p[0] - r[0]);
+        int[] out = new int[n];
+        for (int i = 0; i < n; ) {
+            int j = i + 1;
+            while (j < n && a[j][0] - a[j - 1][0] <= limit) j++;
+            int[] pos = new int[j - i];
+            for (int k = 0; k < j - i; k++) pos[k] = a[i + k][1];
+            Arrays.sort(pos);
+            for (int k = 0; k < j - i; k++) out[pos[k]] = a[i + k][0];
+            i = j;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-08-28 · [Lexicographically Smallest Palindromic Permutation Greater than Target](https://leetcode.com/problems/lexicographically-smallest-palindromic-permutation-greater-than-target/?envType=daily-question&envId=2026-08-28) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+Closed the problem with minimal effort.
+
+```java
+class Solution {
+    String lexPalindromicPermutation(String s, String target) {
+        int n = s.length(), half = n / 2, odd = 0;
+        int[] cs = new int[26];
+        for (char c : s.toCharArray()) cs[c - 'a']++;
+        char mid = 0;
+        for (int c = 0; c < 26; c++)
+            if (cs[c] % 2 == 1) {
+                odd++;
+                mid = (char) ('a' + c);
+            }
+
+        if (odd > 1) return "";
+        for (int c = 0; c < 26; c++) cs[c] /= 2;
+        char[] left = new char[half];
+        int i = 0;
+        for (; i < half; i++) {
+            int t = target.charAt(i) - 'a';
+            if (cs[t] == 0) break;
+            cs[t]--;
+            left[i] = target.charAt(i);
+        }
+        if (i == half) {
+            String out = palindrome(left, mid, n);
+            if (out.compareTo(target) > 0) return out;
+        }
+        for (int j = i == half ? half - 1 : i; j >= 0; j--) {
+            if (j < i) cs[target.charAt(j) - 'a']++;
+            char nxt = 0;
+            for (char c = (char) (target.charAt(j) + 1); c <= 'z'; c++)
+                if (cs[c - 'a'] > 0) {
+                    nxt = c;
+                    break;
+                }
+
+            if (nxt == 0) continue;
+            cs[nxt - 'a']--;
+            left[j] = nxt;
+            int p = j + 1;
+            for (int c = 0; c < 26; c++)
+                while (cs[c] > 0) {
+                    left[p++] = (char) ('a' + c);
+                    cs[c]--;
+                }
+
+            return palindrome(left, mid, n);
+        }
+        return "";
+    }
+
+    String palindrome(char[] left, char mid, int n) {
+        StringBuilder out = new StringBuilder();
+        out.append(left);
+        if (n % 2 == 1) out.append(mid);
+        for (int i = left.length - 1; i >= 0; i--) out.append(left[i]);
+        return out.toString();
+    }
+}
+```
+
+## 2026-08-27 · [Lexicographically Smallest Permutation Greater than Target](https://leetcode.com/problems/lexicographically-smallest-permutation-greater-than-target/?envType=daily-question&envId=2026-08-27) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I used the hints, although I probably could have solved it myself. I just wasn't in the mood.
+
+```java
+class Solution {
+    String lexGreaterPermutation(String s, String target) {
+        int n = s.length();
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : s.toCharArray()) map.put(c, map.getOrDefault(c, 0) + 1);
+        int i = 0;
+        for (; i < n; i++) {
+            char t = target.charAt(i);
+            if (map.getOrDefault(t, 0) == 0) break;
+            map.put(t, map.get(t) - 1);
+        }
+        for (int j = i == n ? n - 1 : i; j >= 0; j--) {
+            if (j < i) map.put(target.charAt(j), map.getOrDefault(target.charAt(j), 0) + 1);
+            char nxt = 0;
+            for (char c = (char) (target.charAt(j) + 1); c <= 'z'; c++)
+                if (map.getOrDefault(c, 0) > 0) {
+                    nxt = c;
+                    break;
+                }
+                
+            if (nxt == 0) continue;
+            map.put(nxt, map.get(nxt) - 1);
+            StringBuilder out = new StringBuilder(target.substring(0, j));
+            out.append(nxt);
+            for (char c = 'a'; c <= 'z'; c++) {
+                int cnt = map.getOrDefault(c, 0);
+                while (cnt-- > 0) out.append(c);
+            }
+            return out.toString();
+        }
+        return "";
+    }
+}
+```
+
+
+
+## 2026-08-26 · [Shortest and Lexicographically Smallest Beautiful String](https://leetcode.com/problems/shortest-and-lexicographically-smallest-beautiful-string/?envType=daily-question&envId=2026-08-26) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+```java
+class Solution {
+    String shortestBeautifulSubstring(String s, int k) {
+        int cnt = 0, len = 101, n = s.length();
+        String out = "";
+        for (int i = 0, j = 0; i < n; i++) {
+            if (s.charAt(i) == '1') cnt++;
+            while (cnt > k) if (s.charAt(j++) == '1') cnt--;
+            while (j < n && s.charAt(j) == '0') j++;
+            if (cnt == k) {
+                if (len > i - j + 1) {
+                    out = s.substring(j, i + 1);
+                    len = i - j + 1;
+                } else if (len == i - j + 1 && s.substring(j, i + 1).compareTo(out) < 0) out = s.substring(j, i + 1);
+            }
+        }
+        return out;
+    }
+}
+```
+
+Runtime **1 ms** (beats 100.00%) · Memory **43.49 MB** (beats 99.32%) · Time taken **20m 58s**
+
+## 2026-08-25 · [Smallest Missing Multiple of K](https://leetcode.com/problems/smallest-missing-multiple-of-k/?envType=daily-question&envId=2026-08-25) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int missingMultiple(int[] nums, int k) {
+        Set<Integer> set = new HashSet<>();
+        for (int n : nums) if (n % k == 0) set.add(n);
+        int out = k;
+        while (true) {
+            if (!set.contains(out)) return out;
+            out += k;
+        }
+    }
+}
+```
+
+Runtime **1 ms** (beats 82.00%) · Memory **44.50 MB** (beats 99.08%) · Time taken **4m 22s**
+
+## 2026-08-24 · [Stone Game VIII](https://leetcode.com/problems/stone-game-viii/?envType=daily-question&envId=2026-08-24) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+Solved according to the manual from eunice
+
+```java
+class Solution {
+    int stoneGameVIII(int[] stones) {
+        int n = stones.length;
+        for (int i = 1; i < n; i++) stones[i] += stones[i - 1];
+        int out = stones[n - 1];
+        for (int i = n - 2; i > 0; i--) out = Math.max(out, stones[i] - out);
+        return out;
+    }
+}
+```
+
+
+
+## 2026-08-23 · [Sum Game](https://leetcode.com/problems/sum-game/?envType=daily-question&envId=2026-08-23) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    boolean sumGame(String num) {
+        int sumL = 0, sumR = 0, cntL = 0, cntR = 0;
+        for (int i = 0; i < num.length() / 2; i++) {
+            if (num.charAt(i) == '?') cntL++;
+            else sumL += Integer.parseInt("" + num.charAt(i));
+        }
+        for (int i = num.length() / 2; i < num.length(); i++) {
+            if (num.charAt(i) == '?') cntR++;
+            else sumR += Integer.parseInt("" + num.charAt(i));
+        }        
+        int cnt = -cntL + cntR;
+        int sum = sumL - sumR;
+
+        return 2 * sum != 9 * cnt;
+    }
+}
+```
+
+Runtime **20 ms** (beats 5.11%) · Memory **47.13 MB** (beats 26.28%) · Time taken **15m 59s**
+
+## 2026-08-22 · [Check Divisibility by Digit Sum and Product](https://leetcode.com/problems/check-divisibility-by-digit-sum-and-product/?envType=daily-question&envId=2026-08-22) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    boolean checkDivisibility(int n) {
+        int c = n, s = 0, p = 1;
+        while (c > 0) {
+            s += c % 10;
+            p *= c % 10;
+            c /= 10;
+        }
+        return n % (s + p) == 0;
+    }
+}
+```
+
+Runtime **1 ms** (beats 25.54%) · Memory **42.45 MB** (beats 42.42%) · Time taken **5m 9s**
+
+## 2026-08-21 · [Kth Smallest Amount With Single Denomination Combination](https://leetcode.com/problems/kth-smallest-amount-with-single-denomination-combination/?envType=daily-question&envId=2026-08-21) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+I analyzed and solved the problem with AI support. I'm shifting my work time to other tasks as much as possible.
+
+```java
+class Solution {
+    long findKthSmallest(int[] coins, int k) {
+        int n = coins.length;
+        long[] lcms = new long[1 << n];
+        int[] sign = new int[1 << n];
+        lcms[0] = 1;
+        sign[0] = -1;
+        int min = coins[0];
+        for (int i = 0; i < n; i++) {
+            min = Math.min(min, coins[i]);
+            int bit = 1 << i;
+            for (int mask = 0; mask < bit; mask++) {
+                lcms[mask | bit] = lcm(lcms[mask], coins[i]);
+                sign[mask | bit] = -sign[mask];
+            }
+        }
+        long l = 1, r = (long) min * k;
+        while (l < r) {
+            long mid = l + (r - l) / 2, cnt = 0;
+            for (int mask = 1; mask < 1 << n; mask++) cnt += mid / lcms[mask] * sign[mask];
+            if (cnt >= k) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+
+    long lcm(long a, long b) {
+        return a / gcd(a, b) * b;
+    }
+
+    long gcd(long a, long b) {
+        while (b > 0) {
+            long t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+
+
+## 2026-08-21 · [Distribute Elements Into Two Arrays II](https://leetcode.com/problems/distribute-elements-into-two-arrays-ii/?envType=daily-question&envId=2026-08-21) · (2 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    int[] resultArray(int[] nums) {
+        int n = nums.length, m = 1;
+        int[] uniq = nums.clone();
+        Arrays.sort(uniq);
+        for (int i = 1; i < n; i++) if (uniq[i] != uniq[m - 1]) uniq[m++] = uniq[i];
+        Fenwick a = new Fenwick(m);
+        Fenwick b = new Fenwick(m);
+        a.add(rank(uniq, m, nums[0]), 1);
+        b.add(rank(uniq, m, nums[1]), 1);
+        int[] arr = new int[n];
+        arr[0] = nums[1];
+        int i = 2, j = 0, k = 0;
+        for ( ; i < n; i++) {
+            int r = rank(uniq, m, nums[i]);
+            int ga = j + 1 - a.sum(r);
+            int gb = k + 1 - b.sum(r);
+            if (ga > gb || (ga == gb && j <= k)) {
+                nums[++j] = nums[i];
+                a.add(r, 1);
+            } else {
+                arr[++k] = nums[i];
+                b.add(r, 1);
+            }
+        }
+        j++;
+        k = 0;
+        for ( ; j < n; j++, k++) nums[j] = arr[k];
+        return nums;
+    }
+
+    int rank(int[] uniq, int m, int x) {
+        int lo = 0, hi = m;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (uniq[mid] < x) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo + 1;
+    }
+
+    class Fenwick {
+        int[] t;
+        Fenwick(int n) { t = new int[n + 2]; }
+        void add(int i, int v) { for (; i < t.length; i += i & -i) t[i] += v; }
+        int sum(int i) {
+            int s = 0;
+            for (; i > 0; i -= i & -i) s += t[i];
+            return s;
+        }
+    }
+}
+```
+
+Runtime **37 ms** (beats 75.86%) · Memory **58.72 MB** (beats 75.86%) · Time taken **35m 38s**
+
+## 2026-08-20 · [Distribute Elements Into Two Arrays I](https://leetcode.com/problems/distribute-elements-into-two-arrays-i/?envType=daily-question&envId=2026-08-20) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int[] resultArray(int[] nums) {
+        int i = 2, j = 0, k = 0, n = nums.length;
+        int[] arr = new int[n];
+        arr[0] = nums[1];
+        for ( ; i < n; i++) {
+            if (nums[j] > arr[k]) nums[++j] = nums[i];
+            else arr[++k] = nums[i];
+        }
+        j++;
+        k = 0;
+        for ( ; j < n; j++, k++) nums[j] = arr[k];
+        return nums;
+    }
+}
+```
+
+Runtime **1 ms** (beats 98.08%) · Memory **46.72 MB** (beats 42.79%) · Time taken **16m 51s**
+
+## 2026-08-19 · [Cinema Seat Allocation](https://leetcode.com/problems/cinema-seat-allocation/?envType=daily-question&envId=2026-08-19) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+Not an independent solution. Used the LeetCode Editorial.
+
+```java
+class Solution {
+    int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int[] s : reservedSeats)
+            map.put(s[0], map.getOrDefault(s[0], 0) | 1 << (s[1] - 1));
+        int out = 2 * n;
+        for (int mask : map.values()) {
+            int cnt = 0;
+            if ((mask & 0b0000011110) == 0) cnt++;
+            if ((mask & 0b0111100000) == 0) cnt++;
+            if ((mask & 0b0001111000) == 0) cnt++;
+            if (cnt == 0) out -= 2;
+            else if (cnt < 3) out--;
+        }
+        return out;
+    }
+}
+```
+
+
+
+## 2026-08-18 · [Find the Largest Almost Missing Integer](https://leetcode.com/problems/find-the-largest-almost-missing-integer/?envType=daily-question&envId=2026-08-18) · (2 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **3/9**
+
+```java
+class Solution {
+    int largestInteger(int[] nums, int k) {
+        int n = nums.length;
+        if (k == 1) {
+            Map<Integer, Integer> map = new HashMap<>();
+            for (int num : nums) map.put(num, map.getOrDefault(num, 0) + 1);
+            return map.keySet().stream().filter(e -> map.get(e) == 1).max(Integer::compare).orElse(-1);
+        }
+
+        if (k == n) return Arrays.stream(nums).max().orElse(-1);
+
+        int b = Math.min(nums[0], nums[n - 1]);
+        int a = Math.max(nums[0], nums[n - 1]);
+        if (a == b) return -1;
+        boolean f = true;
+        for (int i = 1; i < n - 1; i++) {
+            if (nums[i] == a) {
+                f = false;
+                break;
+            }
+        }
+        if (f) return a;
+        for (int i = 1; i < n - 1; i++) {
+            if (nums[i] == b) return -1; 
+        }        
+        return b;
+    }
+}
+```
+
+Runtime **7 ms** (beats 14.74%) · Memory **45.07 MB** (beats 57.19%) · Time taken **21m 54s**
+
+## 2026-08-17 · [Stone Game V](https://leetcode.com/problems/stone-game-v/?envType=daily-question&envId=2026-08-17) · (1 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+```java
+class Solution {
+    int[] ps;
+    int[][] mem;
+
+    int stoneGameV(int[] stoneValue) {
+        int n = stoneValue.length;
+        ps = new int[n + 1];
+        ps[0] = 0;
+        for (int i = 1; i <= n; i++) ps[i] = ps[i - 1] + stoneValue[i - 1];
+        mem = new int[n][n];
+        for (int i = 0; i < n; i++) Arrays.fill(mem[i], -1);
+        return calcAns(0, n - 1);
+    }
+
+    int calcAns(int l, int r) {
+        if (l == r) return 0;
+        if (mem[l][r] > -1) return mem[l][r];
+        int out = 0;
+        for (int x = l, add = 0; x < r; x++) {
+            int sL = calcSum(l, x);
+            int sR = calcSum(x + 1, r);
+
+            if (sL < sR) add = sL + calcAns(l, x);
+            else if (sL > sR) add = sR + calcAns(x + 1, r);
+            else add = sL + Math.max(calcAns(l, x), calcAns(x + 1, r));
+
+            out = Math.max(out, add);
+        }
+        return mem[l][r] = out;
+    }
+
+    int calcSum(int l, int r) {
+        return ps[r + 1] - ps[l];
+    }
+}
+```
+
+Runtime **223 ms** (beats 90.38%) · Memory **47.45 MB** (beats 87.74%) · Time taken **35m 59s**
+
+## 2026-08-16 · [Stone Game IX](https://leetcode.com/problems/stone-game-ix/?envType=daily-question&envId=2026-08-16) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **6/9**
+
+Did not figure it out in an hour.
+
+```java
+class Solution {
+    boolean stoneGameIX(int[] stones) {
+        int[] div = new int[3];
+        for (int s : stones) div[s % 3]++;
+
+        if (div[0] % 2 == 0) return Math.min(div[1], div[2]) > 0;
+        
+        return Math.abs(div[1] - div[2]) > 2;
+    }
+}
+```
+
+
+
+## 2026-08-15 · [Longest Subsequence With Non-Zero Bitwise XOR](https://leetcode.com/problems/longest-subsequence-with-non-zero-bitwise-xor/?envType=daily-question&envId=2026-08-15) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+This looks like one of the easiest medium problems. I will add it to the collection. Yes, my time really was 40 minutes. A good problem.
+
+```java
+class Solution {
+    int longestSubsequence(int[] nums) {
+        int n = nums.length, xor = nums[0];
+        for (int i = 1; i < n; i++) xor ^= nums[i];      
+        if (xor > 0) return n;
+        boolean isZero = true;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != 0) {
+                isZero = false;
+                break;
+            } 
+        }     
+        return isZero ? 0 : n - 1;
+    }
+}
+```
+
+Runtime **1 ms** (beats 100.00%) · Memory **133.63 MB** (beats 18.38%) · Time taken **40m 0s**
+
+## 2026-08-14 · [Maximum Length Substring With Two Occurrences](https://leetcode.com/problems/maximum-length-substring-with-two-occurrences/?envType=daily-question&envId=2026-08-14) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int maximumLengthSubstring(String s) {
+        int n = s.length(), out = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0, j = 0; i < n; i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+            while (map.get(s.charAt(i)) > 2) map.put(s.charAt(j), map.get(s.charAt(j++)) - 1);
+            out = Math.max(out, i - j + 1);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **3 ms** (beats 43.02%) · Memory **44.15 MB** (beats 33.61%) · Time taken **6m 31s**
+
+## 2026-08-13 · [Longest Substring of One Repeating Character](https://leetcode.com/problems/longest-substring-of-one-repeating-character/?envType=daily-question&envId=2026-08-13) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+Did not try to solve it. Together with an AI I assembled the most academically clean solution, to build the skill. Segment-tree understanding is already there, and I do not rate such problems high on difficulty, yet they still need time spent on a hand-written solution, which I keep putting off. Time feels especially costly now, since I do not expect problems at this level in my own interviews. I will put this type of problem first in the practice queue once the pet project is no longer the main focus.
+
+```java
+class Solution {
+    char[] letters;
+
+    int[] longestRepeating(String s, String queryCharacters, int[] queryIndices) {
+        letters = s.toCharArray();
+        Node root = new Node(0, letters.length - 1);
+        int k = queryCharacters.length();
+        int[] out = new int[k];
+        for (int i = 0; i < k; i++) {
+            letters[queryIndices[i]] = queryCharacters.charAt(i);
+            root.update(queryIndices[i]);
+            out[i] = root.maxRun;
+        }
+        return out;
+    }
+
+    class Node {
+        int leftBound, rightBound;
+        int leftRun, rightRun, maxRun;
+        Node left, right;
+
+        Node(int leftBound, int rightBound) {
+            this.leftBound = leftBound;
+            this.rightBound = rightBound;
+            if (leftBound == rightBound) {
+                leftRun = rightRun = maxRun = 1;
+                return;
+            }
+            int mid = (leftBound + rightBound) / 2;
+            left = new Node(leftBound, mid);
+            right = new Node(mid + 1, rightBound);
+            merge();
+        }
+
+        void update(int index) {
+            if (leftBound == rightBound) return;
+            if (index <= left.rightBound) left.update(index);
+            else right.update(index);
+            merge();
+        }
+
+        void merge() {
+            int leftLen = left.rightBound - left.leftBound + 1;
+            int rightLen = right.rightBound - right.leftBound + 1;
+            maxRun = Math.max(left.maxRun, right.maxRun);
+            leftRun = left.leftRun;
+            rightRun = right.rightRun;
+            if (letters[left.rightBound] == letters[right.leftBound]) {
+                maxRun = Math.max(maxRun, left.rightRun + right.leftRun);
+                if (left.leftRun == leftLen) leftRun += right.leftRun;
+                if (right.rightRun == rightLen) rightRun += left.rightRun;
+            }
+        }
+    }
+}
+```
+
+
+
+## 2026-08-12 · [Length of Longest Subarray With at Most K Frequency](https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/?envType=daily-question&envId=2026-08-12) · (4 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **4/9**
+
+A familiar problem — not happy with how I solved it. Took too long, and the code wants a tweak.
+
+```java
+class Solution {
+    int maxSubarrayLength(int[] nums, int k) {
+        int n = nums.length, j = 0, out = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+            while(map.get(nums[i]) > k && j < n) map.put(nums[j], map.get(nums[j++]) - 1);
+            out = Math.max(out, i - j + 1);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **70 ms** (beats 40.08%) · Memory **87.61 MB** (beats 96.15%) · Time taken **8m 59s**
+
+## 2026-08-11 · [Smallest Missing Integer Greater Than Sequential Prefix Sum](https://leetcode.com/problems/smallest-missing-integer-greater-than-sequential-prefix-sum/?envType=daily-question&envId=2026-08-11) · (3 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+I do not find complaints that the statement is confusing to be fair. I have seen that kind of comment often enough, and in the vast majority of cases I disagreed as well.
+
+```java
+class Solution {
+    int missingInteger(int[] nums) {
+        int n = nums.length;
+        int sum = nums[0];
+        for (int i = 1; i < n; i++) {
+            if (nums[i] != nums[i - 1] + 1) break;
+            sum += nums[i];
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int e : nums) set.add(e);
+        while (set.contains(sum)) sum++;
+        return sum;
+    }
+}
+```
+
+Runtime **2 ms** (beats 52.86%) · Memory **43.97 MB** (beats 77.96%) · Time taken **9m 17s**
+
+## 2026-08-10 · [Stone Game IV](https://leetcode.com/problems/stone-game-iv/?envType=daily-question&envId=2026-08-10) · (2 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **3/9**
+
+A problem with intimidating (and confusing) difficulty. I felt like collecting extreme problems — the easiest or hardest ones in their difficulty band. I will start that list with this one.
+
+```java
+class Solution {
+    boolean winnerSquareGame(int n) {
+        boolean[] dp = new boolean[n + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j * j <= i; j++) {
+                if (j * j == i || (i - j * j > 0 && !dp[i - j * j])) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+}
+```
+
+Runtime **15 ms** (beats 64.49%) · Memory **42.56 MB** (beats 68.41%) · Time taken **18m 38s**
+
+## 2026-08-09 · [Stone Game II](https://leetcode.com/problems/stone-game-ii/?envType=daily-question&envId=2026-08-09) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+This is a brute-force problem via recursion. Memoization is added so the solution does not TL.
+
+```java
+class Solution {
+    int[][] mem;
+
+    int stoneGameII(int[] piles) {
+        int n = piles.length;
+        mem = new int[n][n];
+        for (int[] row : mem) Arrays.fill(row, Integer.MIN_VALUE);
+        int total = Arrays.stream(piles).sum();
+        return (total + cnt(piles, 0, 1)) / 2;
+    }
+
+    int cnt(int[] piles, int i, int m) {
+        int n = piles.length;
+        if (i == n) return 0;
+        if (mem[i][m - 1] != Integer.MIN_VALUE) return mem[i][m - 1];
+        int max = Integer.MIN_VALUE;
+        for (int k = 0; k < 2 * m && i + k < n; k++) {
+            int stns = 0;
+            for (int j = 0; j <= k; j++) stns += piles[i + j];
+            max = Math.max(max, stns - cnt(piles, i + k + 1, Math.max(m, k + 1)));
+        }
+        return mem[i][m - 1] = max;
+    }
+}
+```
+
+Runtime **12 ms** (beats 36.12%) · Memory **44.56 MB** (beats 56.71%) · Time taken **42m 34s**
+
+## 2026-08-08 · [Find the Lexicographically Smallest Valid Sequence](https://leetcode.com/problems/find-the-lexicographically-smallest-valid-sequence/?envType=daily-question&envId=2026-08-08) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **7/9**
+
+Did not solve it. Only figured out the main idea toward the end of the hour. A developmental problem that fits my current level.
+
+```java
+class Solution {
+    int[] validSequence(String word1, String word2) {
+        int m = word1.length(), n = word2.length();
+        int[] last = new int[n];
+        Arrays.fill(last, -1);
+        for (int i = m - 1, j = n - 1; i >= 0 && j >= 0; i--)
+            if (word1.charAt(i) == word2.charAt(j)) last[j--] = i;
+
+        int[] out = new int[n];
+        boolean isChanged = false;
+        int j = 0;
+        for (int i = 0; i < m && j < n; i++) {
+            if (word1.charAt(i) == word2.charAt(j)) out[j++] = i;
+            else if (!isChanged && (j == n - 1 || i < last[j + 1])) {
+                out[j++] = i;
+                isChanged = true;
+            }
+        }
+        return j == n ? out : new int[0];
+    }
+}
+```
+
+
+
+## 2026-08-07 · [Smallest Divisible Digit Product II](https://leetcode.com/problems/smallest-divisible-digit-product-ii/?envType=daily-question&envId=2026-08-07) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+Did not try to solve it — went straight to working through the solution with an AI from the Editorial. Would not have solved it alone. The problem stays on the long shelf until there is time to practice it properly.
+
+```java
+class Solution {
+    String smallestNumber(String num, long t) {
+        long x = t;
+        for (int i = 2; i <= 9; i++) while (x % i == 0) x /= i;
+        if (x > 1) return "-1";
+
+        int n = num.length();
+        char[] a = num.toCharArray();
+        long[] rem = new long[n + 1];
+        rem[0] = t;
+        int pos = n - 1;
+
+        for (int i = 0; i < n; i++) {
+            if (a[i] == '0') {
+                pos = i;
+                break;
+            }
+            rem[i + 1] = rem[i] / gcd(rem[i], a[i] - '0');
+        }
+        if (rem[n] == 1) return num;
+
+        for (int i = pos; i >= 0; i--) {
+            while (++a[i] <= '9') {
+                long need = rem[i] / gcd(rem[i], a[i] - '0');
+                int k = 9;
+                for (int j = n - 1; j > i; j--) {
+                    while (need % k != 0) k--;
+                    need /= k;
+                    a[j] = (char) ('0' + k);
+                }
+                if (need == 1) return new String(a);
+            }
+        }
+
+        StringBuilder out = new StringBuilder();
+        x = t;
+        for (int i = 9; i > 1; i--) while (x % i == 0) {
+                out.append((char) ('0' + i));
+                x /= i;
+            }
+        
+        int pad = Math.max(n + 1 - out.length(), 0);
+        for (int i = 0; i < pad; i++) out.append('1');
+        return out.reverse().toString();
+    }
+
+    long gcd(long a, long b) {
+        while (b > 0) {
+            long t = a % b;
+            a = b;
+            b = t;
+        }
+        return a;
+    }
+}
+```
+
+
+
+## 2026-08-06 · [Smallest Divisible Digit Product I](https://leetcode.com/problems/smallest-divisible-digit-product-i/?envType=daily-question&envId=2026-08-06) · (8 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int smallestNumber(int n, int t) {
+        while (prodD(n) % t != 0) n++;
+        return n;
+    }
+    
+    int prodD(int n) {
+        int out = 1;
+        while (n > 0) {
+            out *= n % 10;
+            n /= 10;
+        }
+        return out;
+    }
+}
+```
+
+Runtime **1 ms** (beats 100.00%) · Memory **42.56 MB** (beats 65.90%) · Time taken **5m 18s**
+
+## 2026-08-05 · [Remove Methods From Project](https://leetcode.com/problems/remove-methods-from-project/?envType=daily-question&envId=2026-08-05) · (7 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    List<Integer> remainingMethods(int n, int k, int[][] invocations) {
+        List<Integer>[] list = new ArrayList[n];
+        for (int i = 0; i < n; i++) list[i] = new ArrayList<>();
+        for (int[] g : invocations) list[g[0]].add(g[1]);
+
+        boolean[] susp = new boolean[n];
+        Queue<Integer> q = new ArrayDeque<>();
+        q.offer(k);
+        while (!q.isEmpty()) {
+            int v = q.poll();
+            susp[v] = true;
+            for (int u : list[v]) {
+                if (susp[u]) continue;
+                q.offer(u);
+                susp[u] = true;
+            }
+        }
+        
+        for (int[] g : invocations) if (!susp[g[0]] && susp[g[1]])
+            return IntStream.range(0, n).boxed().toList();
+
+        return IntStream.range(0, n).boxed().filter(e -> !susp[e]).toList();
+    }
+}
+```
+
+Runtime **58 ms** (beats 82.73%) · Memory **283.80 MB** (beats 60.00%) · Time taken **41m 55s**
+
+## 2026-08-04 · [Find Missing Elements](https://leetcode.com/problems/find-missing-elements/?envType=daily-question&envId=2026-08-04) · (6 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    List<Integer> findMissingElements(int[] nums) {
+        Arrays.sort(nums);
+        List<Integer> out = new ArrayList<>();
+        int curr = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            curr++;
+            while (curr != nums[i]) out.add(curr++);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **7 ms** (beats 22.50%) · Memory **47.42 MB** (beats 5.33%) · Time taken **5m 51s**
+
+## 2026-08-03 · [Stone Game III](https://leetcode.com/problems/stone-game-iii/?envType=daily-question&envId=2026-08-03) · (5 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+About 20–25 minutes went into the solution itself. The rest of the time went into realizing I should solve from the end.
+
+```java
+class Solution {
+    String stoneGameIII(int[] stoneValue) {  
+        int n = stoneValue.length - 1;
+        int[] da = new int[n + 1];
+        int[] db = new int[n + 1];
+        if (n == 0) da[0] = stoneValue[0];
+        if (n == 1) da[0] = Math.max(stoneValue[0] + stoneValue[1], stoneValue[0] - stoneValue[1]);
+        if (n > 1) {
+            da[n] = stoneValue[n];
+            db[n] = -stoneValue[n];
+            
+            da[n - 1] = Math.max(stoneValue[n - 1] + db[n], stoneValue[n - 1] + stoneValue[n]);
+            db[n - 1] = Math.min(-stoneValue[n - 1] - stoneValue[n], -stoneValue[n - 1] + da[n]);
+            
+            da[n - 2] = Math.max(Math.max(
+                stoneValue[n - 2] + stoneValue[n - 1] + stoneValue[n],
+                stoneValue[n - 2] + stoneValue[n - 1] + db[n]),
+                stoneValue[n - 2] + db[n - 1]
+            );
+            db[n - 2] = Math.min(Math.min(
+                -stoneValue[n - 2] - stoneValue[n - 1] - stoneValue[n],
+                -stoneValue[n - 2] - stoneValue[n - 1] + da[n]),
+                -stoneValue[n - 2] + da[n - 1]
+            );
+            
+            for (int i = n - 3; i >= 0; i--) {
+                da[i] = Math.max(Math.max(
+                    stoneValue[i] + stoneValue[i + 1] + stoneValue[i + 2] + db[i + 3],
+                    stoneValue[i] + stoneValue[i + 1] + db[i + 2]),
+                    stoneValue[i] + db[i + 1]
+                );
+                db[i] = Math.min(Math.min(
+                    -stoneValue[i] - stoneValue[i + 1] - stoneValue[i + 2] + da[i + 3],
+                    -stoneValue[i] - stoneValue[i + 1] + da[i + 2]),
+                    -stoneValue[i] + da[i + 1]
+                );                
+            }
+            /*
+                 0  1  2  3  4  5  6  7  8  9  n
+                [ ][ ][ ][ ][ ][ ][ ][i][*][*][*]
+                [ ][ ][ ][ ][ ][ ][ ][i][*][*][*]
+            */                    
+        }
+        if (da[0] > 0) return "Alice";
+        if (da[0] < 0) return "Bob";
+        return "Tie";
+    }
+}
+```
+
+Runtime **6 ms** (beats 92.61%) · Memory **85.52 MB** (beats 65.91%) · Time taken **54m 14s**
 
 ## 2026-08-02 · [Stone Game](https://leetcode.com/problems/stone-game/?envType=daily-question&envId=2026-08-02) · (4 / 100)
 
@@ -147,6 +1249,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-07-28 · [Smallest Palindromic Rearrangement I](https://leetcode.com/problems/smallest-palindromic-rearrangement-i/?envType=daily-question&envId=2026-07-28) · (6 / 100)
 
@@ -414,6 +1518,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-07-21 · [Maximize Active Section with Trade I](https://leetcode.com/problems/maximize-active-section-with-trade-i/?envType=daily-question&envId=2026-07-21) · (2 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **3/9**
@@ -513,6 +1619,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-07-18 · [Find Greatest Common Divisor of Array](https://leetcode.com/problems/find-greatest-common-divisor-of-array/?envType=daily-question&envId=2026-07-18) · (1 / 100)
 
 LeetCode difficulty **Easy** · Subjective difficulty **1/9**
@@ -591,6 +1699,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-07-16 · [Sum of GCD of Formed Pairs](https://leetcode.com/problems/sum-of-gcd-of-formed-pairs/?envType=daily-question&envId=2026-07-16) · (2 / 100)
 
@@ -703,6 +1813,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-07-13 · [Sequential Digits](https://leetcode.com/problems/sequential-digits/?envType=daily-question&envId=2026-07-13) · (2 / 100)
 
@@ -818,6 +1930,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-07-10 · [Path Existence Queries in a Graph II](https://leetcode.com/problems/path-existence-queries-in-a-graph-ii/?envType=daily-question&envId=2026-07-10) · (0 / 100)
 
 LeetCode difficulty **Hard**
@@ -900,6 +2014,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-07-09 · [Path Existence Queries in a Graph I](https://leetcode.com/problems/path-existence-queries-in-a-graph-i/?envType=daily-question&envId=2026-07-09) · (1 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **3/9**
@@ -977,6 +2093,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-07-07 · [Concatenate Non-Zero Digits and Multiply by Sum I](https://leetcode.com/problems/concatenate-non-zero-digits-and-multiply-by-sum-i/?envType=daily-question&envId=2026-07-07) · (4 / 100)
 
@@ -1285,6 +2403,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-07-02 · [Find a Safe Walk Through a Grid](https://leetcode.com/problems/find-a-safe-walk-through-a-grid/?envType=daily-question&envId=2026-07-02) · (1 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **4/9**
@@ -1385,6 +2505,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-06-30 · [Number of Substrings Containing All Three Characters](https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/?envType=daily-question&envId=2026-06-30) · (4 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **3/9**
@@ -1463,6 +2585,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-06-29 · [Number of Strings That Appear as Substrings in Word](https://leetcode.com/problems/number-of-strings-that-appear-as-substrings-in-word/?envType=daily-question&envId=2026-06-29) · (3 / 100)
 
@@ -1619,6 +2743,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-06-25 · [Count Subarrays with Majority Element I](https://leetcode.com/problems/count-subarrays-with-majority-element-i/) · (1 / 100)
 
 LeetCode difficulty **Medium** · Subjective difficulty **2/9**
@@ -1699,6 +2825,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-06-23 · [Number of Zigzag Arrays I](https://leetcode.com/problems/number-of-zigzag-arrays-i/description/?envType=daily-question&envId=2026-06-23&roomId=nAywuq) · (3 / 100)
 
 LeetCode difficulty **Hard** · Subjective difficulty **6/9**
@@ -1763,6 +2891,8 @@ class Solution {
 }
 ```
 
+
+
 ## 2026-06-22 · [Maximum Number of Balloons](https://leetcode.com/problems/maximum-number-of-balloons/description/?envType=daily-question&envId=2026-06-22) · (2 / 100)
 
 LeetCode difficulty **Easy** · Subjective difficulty **2/9**
@@ -1807,6 +2937,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-06-21 · [Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/?envType=daily-question&envId=2026-06-21) · (1 / 100)
 
@@ -1895,6 +3027,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-06-19 · [Find the Highest Altitude](https://leetcode.com/problems/find-the-highest-altitude/description/?envType=daily-question&envId=2026-06-19) · (2 / 100)
 
@@ -2004,6 +3138,8 @@ class Solution {
     }
 }
 ```
+
+
 
 ## 2026-06-16 · [Process String with Special Operations I](https://leetcode.com/problems/process-string-with-special-operations-i/description/?envType=daily-question&envId=2026-06-16) · (4 / 100)
 
