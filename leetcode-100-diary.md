@@ -8,6 +8,1055 @@ Progress rule: solved problems increase the counter by 1; an unsolved task reset
 
 Record streak: **8**
 
+## 2026-10-04 · [Valid Parenthesis String](https://leetcode.com/problems/valid-parenthesis-string/?envType=daily-question&envId=2026-10-04) · (5 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+The cases `"*("` and `"(*))"` took a long time to come up with. Sometimes the head feels like it is working well and the result is still poor, and sometimes the other way around.
+
+```java
+class Solution {
+    boolean checkValidString(String s) {
+        Deque<Integer> stars = new ArrayDeque<>();
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i < s.length(); i++) {
+            switch (s.charAt(i)) {
+                case ')' -> {
+                    if (stack.isEmpty()) {
+                        if (stars.isEmpty()) return false;
+                        stars.pop();
+                    } else stack.pop();
+                }
+                case '(' -> stack.push(i);
+                case '*' -> stars.push(i);
+            }
+        }
+
+        while (!stack.isEmpty()) if (stars.isEmpty() || stack.pop() > stars.pop()) return false;
+        
+        return true;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **42.52 MB** (beats 82.94%) · Time taken **40m 54s**
+
+## 2026-10-03 · [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/?envType=daily-question&envId=2026-10-03) · (4 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **4/9**
+
+This problem is easier than yesterday's. It is almost just validation of a parentheses sequence. It goes into the collection of extreme problems as one of the easiest Hard problems.
+
+```java
+class Solution {
+    int longestValidParentheses(String s) {
+        Deque<Integer> st = new ArrayDeque<>();
+
+        int out = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (st.isEmpty() || s.charAt(i) == '(') st.push(i);
+            else if (s.charAt(st.peek()) == '(') {
+                st.pop();
+                out = Math.max(out, i - (st.isEmpty() ? -1 : st.peek()));
+            } else st.push(i);
+        }
+
+        return out;
+    }
+}
+```
+
+Runtime **5 ms** (beats 75.27%) · Memory **46.85 MB** (beats 5.55%) · Time taken **15m 19s**
+
+## 2026-10-02 · [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/?envType=daily-question&envId=2026-10-02) · (3 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    int n;
+    List<String> out = new ArrayList<>();
+
+    List<String> generateParenthesis(int n) {
+        this.n = n;
+        step(new StringBuilder(), 0, 0);
+        return out;
+    }
+
+    void step(StringBuilder str, int op, int cl) {
+        if (str.length() == 2 * n) {
+            out.add(str.toString());
+            return;
+        }
+        if (op < n) {
+            str.append('(');
+            step(str, op + 1, cl);
+            str.setLength(str.length() - 1);
+        }
+        if (cl < op) {
+            str.append(')');
+            step(str, op, cl + 1);
+            str.setLength(str.length() - 1);
+        }
+    }
+}
+```
+
+Runtime **1 ms** (beats 85.49%) · Memory **43.94 MB** (beats 98.21%) · Time taken **28m 47s**
+
+## 2026-10-01 · [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/?envType=daily-question&envId=2026-10-01) · (2 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+This problem had already been solved once, and it was used to practice writing a switch by hand.
+
+```java
+class Solution {
+    boolean isValid(String s) {
+        Deque<Character> st = new ArrayDeque<>();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case ')' -> {if (st.isEmpty() || st.pop() != '(') return false;}
+                case '}' -> {if (st.isEmpty() || st.pop() != '{') return false;}
+                case ']' -> {if (st.isEmpty() || st.pop() != '[') return false;}
+                default -> st.push(c);
+            }
+        }
+        return st.isEmpty();
+    }
+}
+```
+
+Runtime **2 ms** (beats 96.43%) · Memory **42.85 MB** (beats 96.15%) · Time taken **5m 4s**
+
+## 2026-09-30 · [Maximum Nesting Depth of Two Valid Parentheses Strings](https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/?envType=daily-question&envId=2026-09-30) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **6/9**
+
+A unique problem. It was solved, but still not understood. This submission was expected to make clear, from the error, what was required.
+
+```java
+class Solution {
+    int[] maxDepthAfterSplit(String seq) {
+        int depth = 0, n = seq.length();
+        int[] out = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (seq.charAt(i) == ')') depth--;
+            out[i] = depth % 2 == 0 ? 0 : 1;
+            if (seq.charAt(i) == '(') depth++;
+        }
+        return out;
+    }
+}
+```
+
+Runtime **2 ms** (beats 38.66%) · Memory **45.54 MB** (beats 34.08%) · Time taken **11m 58s**
+
+## 2026-09-29 · [Check if There Is a Valid Parentheses String Path](https://leetcode.com/problems/check-if-there-is-a-valid-parentheses-string-path/?envType=daily-question&envId=2026-09-29) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+The idea was solved independently, but with helpers. I need to come back for the write-ups.
+
+```java
+class Solution {
+    boolean hasValidPath(char[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        boolean[][][] dp = new boolean[m][n][1000];
+        if (grid[0][0] == ')') return false;
+        dp[0][0][1] = true;
+
+        for (int i = 1; i < n; i++)
+            dp[0][i] = shift(dp[0][i - 1], grid[0][i] == '(' ? 1 : -1);
+
+        for (int i = 1; i < m; i++)
+            dp[i][0] = shift(dp[i - 1][0], grid[i][0] == '(' ? 1 : -1);
+
+        for (int i = 1; i < m; i++)
+            for (int j = 1; j < n; j++)
+                dp[i][j] = shift(merge(dp[i - 1][j], dp[i][j - 1]), grid[i][j] == '(' ? 1 : -1);
+
+        return dp[m - 1][n - 1][0];
+    }
+
+    boolean[] merge(boolean[] up, boolean[] left) {
+        boolean[] out = new boolean[up.length];
+        for (int i = 0; i < up.length; i++) out[i] = up[i] || left[i];
+        return out;
+    }
+
+    boolean[] shift(boolean[] a, int d) {
+        boolean[] out = new boolean[a.length]; 
+        for (int i = 0; i < a.length; i++) {
+            int j = i + d;
+            if (a[i] && j >= 0 && j < a.length) out[j] = true;
+        }
+        return out;
+    }
+}
+```
+
+## 2026-09-28 · [Maximum Nesting Depth of the Parentheses](https://leetcode.com/problems/maximum-nesting-depth-of-the-parentheses/?envType=daily-question&envId=2026-09-28) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int maxDepth(String s) {
+        int cnt = 0, out = 0;
+        for (char c : s.toCharArray()) {
+            if (c == ')') cnt--;
+            else if (c == '(') out = Math.max(out, ++cnt);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **42.76 MB** (beats 70.69%) · Time taken **3m 27s**
+
+## 2026-09-27 · [Reverse Substrings Between Each Pair of Parentheses](https://leetcode.com/problems/reverse-substrings-between-each-pair-of-parentheses/?envType=daily-question&envId=2026-09-27) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **6/9**
+
+I need to come back to this problem. Problems like this should already be working out by now.
+
+```java
+class Solution {
+    String reverseParentheses(String s) {
+        int n = s.length();
+        int[] pair = new int[n];
+        Deque<Integer> st = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == '(') st.push(i);
+            else if (s.charAt(i) == ')') {
+                int j = st.pop();
+                pair[i] = j;
+                pair[j] = i;
+            }
+        }
+
+        StringBuilder out = new StringBuilder();
+        for (int i = 0, dir = 1; i >= 0 && i < n; i += dir) {
+            if (s.charAt(i) == '(' || s.charAt(i) == ')') {
+                i = pair[i];
+                dir = -dir;
+            } else out.append(s.charAt(i));
+        }
+        return out.toString();
+    }
+}
+```
+
+## 2026-09-26 · [Evaluate the Bracket Pairs of a String](https://leetcode.com/problems/evaluate-the-bracket-pairs-of-a-string/?envType=daily-question&envId=2026-09-26) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    String evaluate(String s, List<List<String>> knowledge) {
+        Map<String, String> map = new HashMap<>();
+        for (List<String> list : knowledge) map.put(list.get(0), list.get(1));
+
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) != '(') {
+                out.append(s.charAt(i));      
+            } else {
+                int j = ++i;
+                while (s.charAt(i) != ')') i++;
+                out.append(map.getOrDefault(s.substring(j, i), "?"));
+            }
+        }
+
+        return out.toString();
+    }
+}
+```
+
+Runtime **31 ms** (beats 96.28%) · Memory **91.05 MB** (beats 47.45%) · Time taken **21m 8s**
+
+## 2026-09-25 · [Smallest Index With Digit Sum Equal to Index](https://leetcode.com/problems/smallest-index-with-digit-sum-equal-to-index/?envType=daily-question&envId=2026-09-25) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int smallestIndex(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (cntD(nums[i]) == i) return i;
+        }
+        return -1;
+    }
+
+    int cntD(int d) {
+        int out = d % 10;
+        d /= 10;
+        while (d > 0) {
+            out += d % 10;
+            d /= 10;
+        }
+        return out;
+    }
+}
+```
+
+Runtime **1 ms** (beats 99.62%) · Memory **45.66 MB** (beats 40.12%) · Time taken **6m 39s**
+
+## 2026-09-24 · [Brace Expansion II](https://leetcode.com/problems/brace-expansion-ii/?envType=daily-question&envId=2026-09-24) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+```java
+class Solution {
+    String expression;
+    int index;
+
+    List<String> braceExpansionII(String expression) {
+        this.expression = expression;
+        Set<String> words = parseUnion();
+        List<String> out = new ArrayList<>(words);
+        Collections.sort(out);
+        return out;
+    }
+
+    Set<String> parseUnion() {
+        Set<String> out = parseConcatenation();
+        while (index < expression.length() && expression.charAt(index) == ',') {
+            index++;
+            out.addAll(parseConcatenation());
+        }
+        return out;
+    }
+
+    Set<String> parseConcatenation() {
+        Set<String> out = new HashSet<>();
+        out.add("");
+
+        while (index < expression.length()) {
+            char c = expression.charAt(index);
+            if (c == ',' || c == '}') break;
+
+            Set<String> item = parseItem();
+            Set<String> product = new HashSet<>();
+            for (String left : out)
+                for (String right : item)
+                    product.add(left + right);
+                    
+            out = product;
+        }
+        return out;
+    }
+
+    Set<String> parseItem() {
+        if (expression.charAt(index) == '{') {
+            index++;
+            Set<String> out = parseUnion();
+            index++;
+            return out;
+        }
+
+        Set<String> out = new HashSet<>();
+        out.add(String.valueOf(expression.charAt(index)));
+        index++;
+        return out;
+    }
+}
+```
+
+## 2026-09-23 · [Minimum Operations to Reduce X to Zero](https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/?envType=daily-question&envId=2026-09-23) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    int minOperations(int[] nums, int x) {
+        int n = nums.length;
+        int sum = 0;
+        for (int e : nums) sum += e;
+        int tgt = sum - x;
+        sum = 0;
+
+        int out = -1;
+        for (int i = 0, j = 0; i < n; i++) {
+            sum += nums[i];
+            while (sum > tgt && j <= i) sum -= nums[j++];
+            if (sum == tgt) out = Math.max(out, i - j + 1);
+        }
+
+        return out == - 1 ? out : n - out;
+    }
+}
+```
+
+Runtime **4 ms** (beats 97.99%) · Memory **102.09 MB** (beats 54.09%) · Time taken **29m 0s**
+
+## 2026-09-22 · [Find X Value of Array II](https://leetcode.com/problems/find-x-value-of-array-ii/?envType=daily-question&envId=2026-09-22) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+```java
+class Solution {
+    int[] resultArray(int[] nums, int k, int[][] queries) {
+        int n = nums.length;
+        SegmentTree tree = new SegmentTree(nums, k);
+        int[] out = new int[queries.length];
+
+        for (int i = 0; i < queries.length; i++) {
+            int index = queries[i][0];
+            int value = queries[i][1] % k;
+            int start = queries[i][2];
+            int x = queries[i][3];
+            tree.update(index, value);
+            out[i] = tree.query(start, n - 1).prefixCount[x];
+        }
+        return out;
+    }
+
+    class SegmentTree {
+        int k;
+        Node[] tree;
+        int n;
+
+        SegmentTree(int[] nums, int k) {
+            this.k = k;
+            this.n = nums.length;
+            tree = new Node[n * 4];
+            build(nums, 1, 0, n - 1);
+        }
+
+        class Node {
+            int product = 1;
+            int[] prefixCount = new int[k];
+        }
+
+        Node merge(Node left, Node right) {
+            Node out = new Node();
+            out.product = left.product * right.product % k;
+
+            for (int remainder = 0; remainder < k; remainder++)
+                out.prefixCount[remainder] = left.prefixCount[remainder];
+
+            for (int remainder = 0; remainder < k; remainder++) {
+                int shifted = remainder * left.product % k;
+                out.prefixCount[shifted] += right.prefixCount[remainder];
+            }
+            return out;
+        }
+
+        void build(int[] nums, int u, int left, int right) {
+            if (left == right) {
+                int value = nums[left] % k;
+                tree[u] = new Node();
+                tree[u].product = value;
+                tree[u].prefixCount[value] = 1;
+                return;
+            }
+            int mid = left + (right - left) / 2;
+            build(nums, 2 * u, left, mid);
+            build(nums, 2 * u + 1, mid + 1, right);
+            tree[u] = merge(tree[2 * u], tree[2 * u + 1]);
+        }
+
+        void update(int index, int value) {
+            update(1, 0, n - 1, index, value);
+        }
+
+        void update(int u, int left, int right, int index, int value) {
+            if (left == right) {
+                for (int remainder = 0; remainder < k; remainder++)
+                    tree[u].prefixCount[remainder] = 0;
+                tree[u].product = value;
+                tree[u].prefixCount[value] = 1;
+                return;
+            }
+            int mid = left + (right - left) / 2;
+            if (index <= mid) update(2 * u, left, mid, index, value);
+            else update(2 * u + 1, mid + 1, right, index, value);
+            tree[u] = merge(tree[2 * u], tree[2 * u + 1]);
+        }
+
+        Node query(int from, int to) {
+            return query(1, 0, n - 1, from, to);
+        }
+
+        Node query(int u, int left, int right, int from, int to) {
+            if (to < left || right < from) return new Node();
+            if (from <= left && right <= to) return tree[u];
+            int mid = left + (right - left) / 2;
+            return merge(
+                query(2 * u, left, mid, from, to),
+                query(2 * u + 1, mid + 1, right, from, to)
+            );
+        }
+    }
+}
+```
+
+## 2026-09-21 · [Find X Value of Array I](https://leetcode.com/problems/find-x-value-of-array-i/?envType=daily-question&envId=2026-09-21) · (3 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I need to come back to this problem and look at the write-ups.
+
+```java
+class Solution {
+    long[] resultArray(int[] nums, int k) {
+        int n = nums.length;
+        long[][] dp = new long[n][k];
+
+        dp[0][nums[0] % k] = 1;
+
+        for (int i = 1; i < n; i++) {
+            int e = nums[i] % k;
+            dp[i][e] = 1;
+            for (int j = 0; j < k; j++) {
+                int j2 = (j * e) % k;
+                dp[i][j2] += dp[i - 1][j];
+            }
+        }
+
+        for (int i = 1; i < n; i++)
+            for (int j = 0; j < k; j++) 
+                dp[i][j] += dp[i - 1][j];
+
+        return dp[n - 1];
+    }
+}
+```
+
+Runtime **27 ms** (beats 8.38%) · Memory **100.84 MB** (beats 7.57%) · Time taken **34m 21s**
+
+## 2026-09-20 · [Reverse Degree of a String](https://leetcode.com/problems/reverse-degree-of-a-string/?envType=daily-question&envId=2026-09-20) · (2 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int reverseDegree(String s) {
+        int out = 0;
+        for (int i = 0; i < s.length(); i++) {
+            out += (- s.charAt(i) + 'a' + 26) * (i + 1);
+        }
+        return out;
+    }
+}
+```
+
+Runtime **1 ms** (beats 99.98%) · Memory **44.07 MB** (beats 51.36%) · Time taken **2m 58s**
+
+## 2026-09-19 · [Circle and Rectangle Overlapping](https://leetcode.com/problems/circle-and-rectangle-overlapping/?envType=daily-question&envId=2026-09-19) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    boolean checkOverlap(int radius, int xCenter, int yCenter, int x1, int y1, int x2, int y2) {
+        if (
+            xCenter <= x2 && xCenter >= x1 &&
+            yCenter <= y2 && yCenter >= y1
+        )
+            return true;
+
+        if (
+            xCenter <= x2 + radius && xCenter >= x1 - radius &&
+            yCenter <= y2 + radius && yCenter >= y1 - radius
+        ) {
+            if (
+                (xCenter < x1 || xCenter > x2) &&
+                (yCenter < y1 || yCenter > y2)
+            ) {
+                int a = Math.min(Math.abs(xCenter - x1), Math.abs(xCenter - x2));
+                int b = Math.min(Math.abs(yCenter - y1), Math.abs(yCenter - y2));
+                return a * a + b * b <= radius * radius;
+            }
+            
+            return true;
+        }
+
+        return false;
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **42.27 MB** (beats 39.27%) · Time taken **43m 13s**
+
+## 2026-09-18 · [Maximum Number of Non-Overlapping Substrings](https://leetcode.com/problems/maximum-number-of-non-overlapping-substrings/?envType=daily-question&envId=2026-09-18) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+Time was limited, and the problem was hard. Keeping the streak in a moment like this does more harm, because it is inefficient for learning. For now it is enough that I understood the problem.
+
+```java
+class Solution {
+    List<String> maxNumOfSubstrings(String s) {
+        int n = s.length();
+        int[] first = new int[26], last = new int[26];
+        Arrays.fill(first, -1);
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'a';
+            if (first[c] < 0) first[c] = i;
+            last[c] = i;
+        }
+
+        List<int[]> list = new ArrayList<>();
+        for (int c = 0; c < 26; c++) {
+            if (first[c] < 0) continue;
+            int left = first[c], right = last[c];
+            boolean ok = true;
+            for (int i = left; i <= right; i++) {
+                int x = s.charAt(i) - 'a';
+                if (first[x] < left) {
+                    ok = false;
+                    break;
+                }
+                right = Math.max(right, last[x]);
+            }
+            if (ok) list.add(new int[]{left, right});
+        }
+        list.sort((p, q) -> p[1] != q[1] ? p[1] - q[1] : q[0] - p[0]);
+
+        List<String> out = new ArrayList<>();
+        int end = -1;
+        for (int[] seg : list) {
+            if (seg[0] > end) {
+                out.add(s.substring(seg[0], seg[1] + 1));
+                end = seg[1];
+            }
+        }
+        return out;
+    }
+}
+```
+
+## 2026-09-17 · [Find Two Non-overlapping Sub-arrays Each With Target Sum](https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/?envType=daily-question&envId=2026-09-17) · (1 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+```java
+class Solution {
+    int minSumOfLengths(int[] arr, int target) {
+        int n = arr.length;
+
+        int[] minsL = new int[n];
+        int[] minsR = new int[n];
+        Arrays.fill(minsR, Integer.MAX_VALUE);
+        
+        int sum = 0;
+        int mL = Integer.MAX_VALUE;
+        for (int i = 0, j = 0; i < n; i++) {
+            sum += arr[i];
+            while (sum > target && j < i) sum -= arr[j++];
+            if (sum == target) {
+                mL = Math.min(mL, i - j + 1);
+                minsR[j] = i - j + 1;
+            }
+            minsL[i] = mL;
+        }
+        
+        for (int i = n - 2; i >= 0; i--) minsR[i] = Math.min(minsR[i], minsR[i + 1]);
+
+        long out = Long.MAX_VALUE;
+        for (int i = 1; i < n; i++) out = Math.min(out, (long) minsL[i - 1] + minsR[i]);
+
+        return out < Integer.MAX_VALUE ? (int) out : -1;        
+    }
+}
+```
+
+Runtime **8 ms** (beats 36.41%) · Memory **92.12 MB** (beats 22.51%) · Time taken **27m 36s**
+
+## 2026-09-16 · [Number of Sets of K Non-Overlapping Line Segments](https://leetcode.com/problems/number-of-sets-of-k-non-overlapping-line-segments/?envType=daily-question&envId=2026-09-16) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+There was no time, so I allowed a solution without a solo attempt even though it is medium.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+
+    int numberOfSets(int n, int k) {
+        int m = n + k - 1, t = 2 * k;
+        int[] dp = new int[t + 1];
+        dp[0] = 1;
+        for (int i = 1; i <= m; i++)
+            for (int j = Math.min(i, t); j >= 1; j--)
+                dp[j] = (dp[j] + dp[j - 1]) % mod;
+
+        return dp[t];
+    }
+}
+```
+
+## 2026-09-15 · [Maximum Number of Non-overlapping Palindrome Substrings](https://leetcode.com/problems/maximum-number-of-non-overlapping-palindrome-substrings/?envType=daily-question&envId=2026-09-15) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **7/9**
+
+This is a solution without a solo attempt.
+
+```java
+class Solution {
+    int maxPalindromes(String s, int k) {
+        int n = s.length(), out = 0;
+
+        for (int i = 0; i <= n - k; ) {
+            if (ok(s, i, i + k - 1)) {
+                out++;
+                i += k;
+            } else if (i + k < n && ok(s, i, i + k)) {
+                out++;
+                i += k + 1;
+            } else i++;
+        }
+
+        return out;
+    }
+
+    boolean ok(String s, int i, int j) {
+        while (i < j) if (s.charAt(i++) != s.charAt(j--)) return false;
+        return true;
+    }
+}
+```
+
+## 2026-09-14 · [Rectangle Overlap](https://leetcode.com/problems/rectangle-overlap/?envType=daily-question&envId=2026-09-14) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    boolean isRectangleOverlap(int[] rec1, int[] rec2) {
+        return rec1[0] < rec2[2] && rec2[0] < rec1[2] && rec1[1] < rec2[3] && rec2[1] < rec1[3];
+    }
+}
+```
+
+Runtime **0 ms** (beats 100.00%) · Memory **42.74 MB** (beats 34.23%) · Time taken **8m 9s**
+
+## 2026-09-13 · [Image Overlap](https://leetcode.com/problems/image-overlap/?envType=daily-question&envId=2026-09-13) · (0 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **5/9**
+
+I need to come back to this problem.
+
+```java
+class Solution {
+    int largestOverlap(int[][] img1, int[][] img2) {
+        int n = img1.length, out = 0;
+        int[][] cnt = new int[2 * n][2 * n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (img1[i][j] == 0) continue;
+                for (int x = 0; x < n; x++) {
+                    for (int y = 0; y < n; y++) {
+                        if (img2[x][y] == 0) continue;
+                        int dx = i - x + n, dy = j - y + n;
+                        cnt[dx][dy]++;
+                        out = Math.max(out, cnt[dx][dy]);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+}
+```
+
+## 2026-09-12 · [Maximum Score of Non-overlapping Intervals](https://leetcode.com/problems/maximum-score-of-non-overlapping-intervals/?envType=daily-question&envId=2026-09-12) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **8/9**
+
+From this problem on I am changing how I play. After reading the statement I decide whether to try it on my own. A hard problem will most likely go straight to a breakdown, without a solo attempt.
+
+```java
+class Solution {
+    int[] maximumWeight(List<List<Integer>> intervals) {
+        int n = intervals.size();
+        int[][] arr = new int[n][4];
+        for (int i = 0; i < n; i++) {
+            List<Integer> cur = intervals.get(i);
+            arr[i][0] = cur.get(0);
+            arr[i][1] = cur.get(1);
+            arr[i][2] = cur.get(2);
+            arr[i][3] = i;
+        }
+        Arrays.sort(arr, (p, r) -> p[0] != r[0] ? Integer.compare(p[0], r[0]) : Integer.compare(p[1], r[1]));
+
+        int[] nxt = new int[n];
+        for (int i = 0; i < n; i++) nxt[i] = search(arr, arr[i][1], i + 1);
+
+        long[][] dp = new long[n + 1][5];
+        int[][][] pick = new int[n + 1][5][];
+        for (int k = 0; k < 5; k++) pick[n][k] = new int[0];
+
+        for (int i = n - 1; i >= 0; i--) {
+            pick[i][0] = new int[0];
+            for (int k = 1; k < 5; k++) {
+                long skip = dp[i + 1][k];
+                int[] skipPick = pick[i + 1][k];
+                long take = dp[nxt[i]][k - 1] + arr[i][2];
+                int[] takePick = insert(pick[nxt[i]][k - 1], arr[i][3]);
+                if (take > skip || take == skip && less(takePick, skipPick)) {
+                    dp[i][k] = take;
+                    pick[i][k] = takePick;
+                } else {
+                    dp[i][k] = skip;
+                    pick[i][k] = skipPick;
+                }
+            }
+        }
+        return pick[0][4];
+    }
+
+    int search(int[][] arr, int x, int l) {
+        int r = arr.length;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (arr[mid][0] > x) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+
+    int[] insert(int[] a, int x) {
+        int n = a.length;
+        int[] out = new int[n + 1];
+        int i = 0;
+        while (i < n && a[i] < x) {
+            out[i] = a[i];
+            i++;
+        }
+        out[i] = x;
+        while (i < n) {
+            out[i + 1] = a[i];
+            i++;
+        }
+        return out;
+    }
+
+    boolean less(int[] a, int[] b) {
+        int len = Math.min(a.length, b.length);
+        for (int i = 0; i < len; i++)
+            if (a[i] != b[i]) return a[i] < b[i];
+        return a.length < b.length;
+    }
+}
+```
+
+## 2026-09-11 · [Unique 3-Digit Even Numbers](https://leetcode.com/problems/unique-3-digit-even-numbers/?envType=daily-question&envId=2026-09-11) · (4 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **2/9**
+
+Spent some time trying to come up with a non-primitive solution, without success.
+
+```java
+class Solution {
+    int totalNumbers(int[] digits) {
+        int n = digits.length;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            if (digits[i] == 0) continue;
+            for (int j = 0; j < n; j++) {
+                if (j == i) continue;
+                for (int k = 0; k < n; k++) {
+                    if (k == j || k == i) continue;
+                    if (digits[k] % 2 == 0) set.add(100 * digits[i] + 10 * digits[j] + digits[k]);
+                }
+            }
+        }
+        return set.size();
+    }
+}
+```
+
+Runtime **5 ms** (beats 82.80%) · Memory **46.52 MB** (beats 26.13%) · Time taken **10m 10s**
+
+## 2026-09-10 · [Count Nodes Equal to Average of Subtree](https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/?envType=daily-question&envId=2026-09-10) · (3 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+
+    int cnt = 0;
+
+    int averageOfSubtree(TreeNode root) {
+        cnt(root);
+        return cnt;
+    }
+
+    int[] cnt(TreeNode node) {
+        if (node == null) return new int[]{0, 0};
+        int[] l = cnt(node.left);
+        int[] r = cnt(node.right);
+        int sum = l[0] + r[0] + node.val;
+        int d = l[1] + r[1] + 1;
+        if (node.val == sum / d) cnt++;
+        return new int[]{sum, d};
+    }
+}
+```
+
+Runtime **1 ms** (beats 56.42%) · Memory **45.39 MB** (beats 74.97%) · Time taken **11m 29s**
+
+## 2026-09-09 · [Count Commas in Range II](https://leetcode.com/problems/count-commas-in-range-ii/?envType=daily-question&envId=2026-09-09) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **1/9**
+
+```java
+class Solution {
+    long countCommas(long n) {
+        long cnt = Math.max(0, n - 999);
+        cnt += Math.max(0, n - 999_999);
+        cnt += Math.max(0, n - 999_999_999);
+        cnt += Math.max(0, n - 999_999_999_999L);
+        cnt += Math.max(0, n - 999_999_999_999_999L);
+        return cnt;
+    }
+}
+```
+
+Runtime **1 ms** (beats 99.36%) · Memory **42.50 MB** (beats 71.15%) · Time taken **3m 50s**
+
+## 2026-09-08 · [Count Commas in Range](https://leetcode.com/problems/count-commas-in-range/?envType=daily-question&envId=2026-09-08) · (1 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **1/9**
+
+```java
+class Solution {
+    int countCommas(int n) {
+        return Math.max(0, n - 999);
+    }
+}
+```
+
+Runtime **1 ms** (beats 83.65%) · Memory **42.60 MB** (beats 57.08%) · Time taken **3m 41s**
+
+## 2026-09-07 · [Distinct Subsequences II](https://leetcode.com/problems/distinct-subsequences-ii/?envType=daily-question&envId=2026-09-07) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+There wasn't time for the problem today, and I worked on it with the last of my energy before sleep. In a more alert state I think I would have solved it.
+
+```java
+class Solution {
+    int mod = 1_000_000_007;
+
+    int distinctSubseqII(String s) {
+        int out = 0;
+        int[] dp = new int[26];
+
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i) - 'a';
+            int add = (out - dp[c] + mod) % mod;
+
+            dp[c] = out + 1;
+            out = (dp[c] + add) % mod;
+        }
+
+        return out;
+    }
+}
+```
+
+## 2026-09-06 · [Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/?envType=daily-question&envId=2026-09-06) · (0 / 100)
+
+LeetCode difficulty **Hard** · Subjective difficulty **6/9**
+
+There wasn't time for the problem today, and I worked on it with the last of my energy before sleep. In a more alert state I think I would have solved it.
+
+```java
+class Solution {
+    int numDistinct(String s, String t) {
+        int sl = s.length(), tl = t.length();
+        int[][] dp = new int[sl + 1][tl + 1];
+
+        for (int i = 0; i <= sl; i++) dp[i][0] = 1;
+
+        for (int i = 1; i <= sl; i++) {
+            for (int j = 1; j <= tl; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (s.charAt(i - 1) == t.charAt(j - 1)) dp[i][j] += dp[i - 1][j - 1];
+            }
+        }
+        
+        return dp[sl][tl];
+    }
+}
+```
+
+## 2026-09-05 · [Smallest Stable Index II](https://leetcode.com/problems/smallest-stable-index-ii/?envType=daily-question&envId=2026-09-05) · (4 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **2/9**
+
+```java
+class Solution {
+    int firstStableIndex(int[] nums, int k) {
+        int n = nums.length;
+
+        int[] pref = new int[n];
+        pref[0] = nums[0];
+        for (int i = 1; i < n; i++) pref[i] = Math.max(pref[i - 1], nums[i]);
+
+        int[] suff = new int[n];
+        suff[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) suff[i] = Math.min(suff[i + 1], nums[i]);
+
+        for (int i = 0; i < n; i++) if (pref[i] - suff[i] <= k) return i;
+
+        return -1;
+    }
+}
+```
+
+Runtime **6 ms** (beats 45.80%) · Memory **125.51 MB** (beats 97.33%) · Time taken **6m 34s**
+
+## 2026-09-04 · [Smallest Stable Index I](https://leetcode.com/problems/smallest-stable-index-i/?envType=daily-question&envId=2026-09-04) · (3 / 100)
+
+LeetCode difficulty **Easy** · Subjective difficulty **1/9**
+
+```java
+class Solution {
+    int firstStableIndex(int[] nums, int k) {
+        int n = nums.length;
+        for (int ind = 0; ind < n; ind++) if (score(nums, ind) <= k) return ind;
+        return -1;
+    }
+
+    int score (int[] nums, int i) {
+        int max = Integer.MIN_VALUE;
+        for (int j = 0; j <= i; j++) max = Math.max(max, nums[j]);
+
+        int min = Integer.MAX_VALUE;
+        for (int j = i; j < nums.length; j++) min = Math.min(min, nums[j]);
+
+        return max - min;
+    }
+}
+```
+
+Runtime **1 ms** (beats 99.79%) · Memory **46.56 MB** (beats 15.79%) · Time taken **6m 29s**
+
+## 2026-09-03 · [Construct Uniform Parity Array II](https://leetcode.com/problems/construct-uniform-parity-array-ii/?envType=daily-question&envId=2026-09-03) · (2 / 100)
+
+LeetCode difficulty **Medium** · Subjective difficulty **3/9**
+
+```java
+class Solution {
+    boolean uniformArray(int[] nums1) {
+        int min = Integer.MAX_VALUE;
+        for (int n : nums1) min = Math.min(min, n);
+        if (min % 2 == 1) return true;
+        for (int n : nums1) if (n != min && n % 2 == 1) return false;
+        return true; 
+    }
+}
+```
+
+Runtime **2 ms** (beats 100.00%) · Memory **121.61 MB** (beats 54.55%) · Time taken **13m 36s**
+
 ## 2026-09-02 · [Construct Uniform Parity Array I](https://leetcode.com/problems/construct-uniform-parity-array-i/?envType=daily-question&envId=2026-09-02) · (1 / 100)
 
 LeetCode difficulty **Easy** · Subjective difficulty **2/9**
